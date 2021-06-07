@@ -23,9 +23,10 @@
 /*	計算点はゆえにSTEP個(II_STEP-5)						*/
 #define DELTA_T 0.00001
 #define STEP 100
-#define II_STEP STEP + 5
-#define JJ_STEP STEP + 5
+#define II_STEP (STEP + 5)
+#define JJ_STEP (STEP + 5)
 #define DELTA_S 0.00002
+#define TIME_MAX 1.00
 
 //ステップ境界定義
 /*入口境界条件*/
@@ -75,12 +76,13 @@ double* J_inv;
 extern double* rho;
 extern double* ux;
 extern double* vy;
-double* Ur;
-double* Vtheta;
+extern double* Ur;
+extern double* Vtheta;
 extern double* e;
 extern double* p;
 extern double* H;
 extern double* c;
+extern volatile double time;
 //保存量
 extern double* Q;
 extern double* E;

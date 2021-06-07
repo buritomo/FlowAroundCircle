@@ -9,53 +9,53 @@ void fds(int dir) {
     int kx_max, ky_max;
     int kx_min, ky_min;
 
-    if (dir == X_DIR) {
+    if (dir == II_DIR) {
         kx_min = 1;
-        kx_max = x_split - 2;
+        kx_max = II_STEP - 2;
         ky_min = 0;
-        ky_max = y_split - 1;
+        ky_max = JJ_STEP - 1;
     }
     else {
         kx_min = 0;
-        kx_max = x_split - 1;
+        kx_max = II_STEP - 1;
         ky_min = 1;
-        ky_max = y_split - 2;
+        ky_max = JJ_STEP - 2;
     }
 
     for (int kx = kx_min; kx < kx_max; kx++) {
         for (int ky = ky_min; ky < ky_max; ky++) {
-            int k = kx + ky * x_split;
+            int k = kx + ky * II_STEP;
 
             //‹«ŠE‚Å‚Ìƒ„ƒRƒrƒAƒ“ŒvŽZ
-            if (dir == X_DIR) {
+            if (dir == II_DIR) {
                 J_bd = 1 / ((J_inv[k] + J_inv[k + 1]) / 2);
             }
             else {
-                J_bd = 1 / ((J_inv[k] + J_inv[k + x_split]) / 2);
+                J_bd = 1 / ((J_inv[k] + J_inv[k + II_STEP]) / 2);
             }
 
 
             muscl(&rho_L, &rho_R, rho, k, dir);
-            muscl(&u_L, &u_R, u, k, dir);
-            muscl(&v_L, &v_R, v, k, dir);
+            muscl(&u_L, &u_R, ux, k, dir);
+            muscl(&v_L, &v_R, vy, k, dir);
             muscl(&p_L, &p_R, p, k, dir);
             muscl(&e_L, &e_R, e, k, dir);
             muscl(&H_L, &H_R, H, k, dir);
             muscl(&c_L, &c_R, c, k, dir);
 
             RoeAverage();
-            if (dir == X_DIR) {
+            if (dir == II_DIR) {
                 k_x = Y_eta_half[k + 1] * J_bd;
                 k_y = -X_eta_half[k + 1] * J_bd;
             }
             else {
-                k_x = -Y_zeta_half[k + x_split] * J_bd;
-                k_y = X_zeta_half[k + x_split] * J_bd;
+                k_x = -Y_xi_half[k + II_STEP] * J_bd;
+                k_y = X_xi_half[k + II_STEP] * J_bd;
             }
 
             Z = k_x * u_ave + k_y * v_ave;
-            b1 = (u_ave * u_ave + v_ave * v_ave) / 2 * (Gamma - 1) / c_ave / c_ave;
-            b2 = (Gamma - 1) / c_ave / c_ave;
+            b1 = (u_ave * u_ave + v_ave * v_ave) / 2 * (GAMMA - 1) / c_ave / c_ave;
+            b2 = (GAMMA - 1) / c_ave / c_ave;
 
             RightArray(R);
             LeftArray(L);
@@ -70,19 +70,19 @@ void fds(int dir) {
                     }
                 }
             }
-            if (dir == X_DIR) {
+            if (dir == II_DIR) {
                 for (int l = 0; l < 4; l++) {
-                    Ehalf[k + split * l] = 0.5 * (E_L[l] + E_R[l]);
+                    Ehalf[k + II_STEP * JJ_STEP * l] = 0.5 * (E_L[l] + E_R[l]);
                     for (int m = 0; m < 4; m++) {
-                        Ehalf[k + split * l] = Ehalf[k + split * l] - 0.5 * w[l + 4 * m] * (Q_R[m] - Q_L[m]);
+                        Ehalf[k + II_STEP * JJ_STEP * l] = Ehalf[k + II_STEP * JJ_STEP * l] - 0.5 * w[l + 4 * m] * (Q_R[m] - Q_L[m]);
                     }
                 }
             }
             else {
                 for (int l = 0; l < 4; l++) {
-                    Fhalf[k + split * l] = 0.5 * (F_L[l] + F_R[l]);
+                    Fhalf[k + II_STEP * JJ_STEP * l] = 0.5 * (F_L[l] + F_R[l]);
                     for (int m = 0; m < 4; m++) {
-                        Fhalf[k + split * l] = Fhalf[k + split * l] - 0.5 * w[l + 4 * m] * (Q_R[m] - Q_L[m]);
+                        Fhalf[k + II_STEP * JJ_STEP * l] = Fhalf[k + II_STEP * JJ_STEP * l] - 0.5 * w[l + 4 * m] * (Q_R[m] - Q_L[m]);
                     }
                 }
             }
@@ -164,7 +164,7 @@ void musclArray(int k, int dir) {
     Q_R[2] = rho_R * v_R / J_bd;
     Q_R[3] = e_R / J_bd;
 
-    if (dir == Y_DIR) {
+    if (dir == JJ_DIR) {
         double U_L = (k_x * u_L + k_y * v_L);
         F_L[0] = rho_L * U_L / J_bd;
         F_L[1] = (rho_L * u_L * U_L + k_x * p_L) / J_bd;
@@ -199,7 +199,7 @@ void RoeAverage(void) {
     u_ave = (sqrt(rho_L) * u_L + sqrt(rho_R) * u_R) / ((sqrt(rho_L) + sqrt(rho_R)));
     v_ave = (sqrt(rho_L) * v_L + sqrt(rho_R) * v_R) / ((sqrt(rho_L) + sqrt(rho_R)));
     H_ave = (sqrt(rho_L) * H_L + sqrt(rho_R) * H_R) / ((sqrt(rho_L) + sqrt(rho_R)));
-    c_ave = sqrt((Gamma - 1) * (H_ave - 0.5 * (u_ave * u_ave + v_ave * v_ave)));
+    c_ave = sqrt((GAMMA - 1) * (H_ave - 0.5 * (u_ave * u_ave + v_ave * v_ave)));
     if (isnan(c_ave)) {
         printf("Here!\n");
     }
@@ -209,11 +209,11 @@ void RoeAverage(void) {
 
 void muscl(double* left, double* right, double* value, int k, int dir) {
     int delta;
-    if (dir == X_DIR) {
+    if (dir == II_DIR) {
         delta = 1;
     }
     else {
-        delta = x_split;
+        delta = II_STEP;
     }
 
     double delta_j_plus = value[k + delta] - value[k];

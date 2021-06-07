@@ -139,14 +139,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="boundary.cpp" />
+    <ClCompile Include="calc.cpp" />
+    <ClCompile Include="grid.cpp" />
+    <ClCompile Include="initial.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="sample.cpp" />
     <ClCompile Include="fds.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="sample.h" />
+    <ClInclude Include="boundary.h" />
+    <ClInclude Include="calc.h" />
     <ClInclude Include="fds.h" />
     <ClInclude Include="global.h" />
+    <ClInclude Include="grid.h" />
+    <ClInclude Include="initial.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

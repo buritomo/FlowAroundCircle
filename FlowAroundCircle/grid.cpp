@@ -5,30 +5,30 @@
 #include "global.h"
 
 void memorySet(void) {
-	rho = (double*)malloc(sizeof(double) * II_STEP * JJ_STEP);
-	ux = (double*)malloc(sizeof(double) * II_STEP * JJ_STEP);
-	vy = (double*)malloc(sizeof(double) * II_STEP * JJ_STEP);
-	e = (double*)malloc(sizeof(double) * II_STEP * JJ_STEP);
-	p = (double*)malloc(sizeof(double) * II_STEP * JJ_STEP);
-	H = (double*)malloc(sizeof(double) * II_STEP * JJ_STEP);
-	c = (double*)malloc(sizeof(double) * II_STEP * JJ_STEP);
+	rho = (double* )malloc(sizeof(double) * II_STEP * JJ_STEP);
+	ux = (double* )malloc(sizeof(double) * II_STEP * JJ_STEP);
+	vy = (double* )malloc(sizeof(double) * II_STEP * JJ_STEP);
+	e = (double* )malloc(sizeof(double) * II_STEP * JJ_STEP);
+	p = (double* )malloc(sizeof(double) * II_STEP * JJ_STEP);
+	H = (double* )malloc(sizeof(double) * II_STEP * JJ_STEP);
+	c = (double* )malloc(sizeof(double) * II_STEP * JJ_STEP);
 
-	Q = (double*)malloc(sizeof(double) * II_STEP * JJ_STEP * 4);
-	E = (double*)malloc(sizeof(double) * II_STEP * JJ_STEP * 4);
-	F = (double*)malloc(sizeof(double) * II_STEP * JJ_STEP * 4);
-	Ehalf = (double*)malloc(sizeof(double) * II_STEP * JJ_STEP * 4);
-	Fhalf = (double*)malloc(sizeof(double) * II_STEP * JJ_STEP * 4);
+	Q = (double* )malloc(sizeof(double) * II_STEP * JJ_STEP * 4);
+	E = (double* )malloc(sizeof(double) * II_STEP * JJ_STEP * 4);
+	F = (double* )malloc(sizeof(double) * II_STEP * JJ_STEP * 4);
+	Ehalf = (double* )malloc(sizeof(double) * II_STEP * JJ_STEP * 4);
+	Fhalf = (double* )malloc(sizeof(double) * II_STEP * JJ_STEP * 4);
 
-	x = (double*)malloc(sizeof(double) * II_STEP * JJ_STEP);
-	y = (double*)malloc(sizeof(double) * II_STEP * JJ_STEP);
-	x_cen = (double*)malloc(sizeof(double) * II_STEP * JJ_STEP);
-	y_cen = (double*)malloc(sizeof(double) * II_STEP * JJ_STEP);
+	x = (double* )malloc(sizeof(double) * II_STEP * JJ_STEP);
+	y = (double* )malloc(sizeof(double) * II_STEP * JJ_STEP);
+	x_cen = (double* )malloc(sizeof(double) * II_STEP * JJ_STEP);
+	y_cen = (double* )malloc(sizeof(double) * II_STEP * JJ_STEP);
 
-	X_xi_half = (double*)malloc(sizeof(double) * II_STEP * JJ_STEP);
-	Y_xi_half = (double*)malloc(sizeof(double) * II_STEP * JJ_STEP);
-	X_eta_half = (double*)malloc(sizeof(double) * II_STEP * JJ_STEP);
-	Y_eta_half = (double*)malloc(sizeof(double) * II_STEP * JJ_STEP);
-	J_inv = (double*)malloc(sizeof(double) * II_STEP * JJ_STEP);
+	X_xi_half = (double* )malloc(sizeof(double) * II_STEP * JJ_STEP);
+	Y_xi_half = (double* )malloc(sizeof(double) * II_STEP * JJ_STEP);
+	X_eta_half = (double* )malloc(sizeof(double) * II_STEP * JJ_STEP);
+	Y_eta_half = (double* )malloc(sizeof(double) * II_STEP * JJ_STEP);
+	J_inv = (double* )malloc(sizeof(double) * II_STEP * JJ_STEP);
 
 	return;
 }
@@ -37,7 +37,7 @@ void cordinateDefine(void) {
 	for (int ki = 0; ki < II_STEP; ki++) {
 		for (int kj = 0; kj < JJ_STEP; kj++) {
 			int k = ki + kj * II_STEP;
-			double r = (((double)ki - 2.0) / (double)II_STEP - 5.0) * (((double)ki - 2.0) / (double)II_STEP - 5.0) * DELTA_S;
+			double r = R_CIRCLE + ((double)ki - 2.0) * ((double)ki - 2.0) * DELTA_S;
 			double theta = 2 * M_PI * ((double)kj - 2.0) / ((double)JJ_STEP - 5.0);
 
 			x_cen[k] = r * cos(theta);
