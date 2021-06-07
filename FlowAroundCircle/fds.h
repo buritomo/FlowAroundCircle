@@ -1,6 +1,10 @@
 #ifndef FDS_H_
 #define FDS_H_
 
+#define EPSILON 1.0
+#define KAPPA 1.0 / 3.0
+
+
 static double b1, b2;
 static double Q_L[4];
 static double Q_R[4];
