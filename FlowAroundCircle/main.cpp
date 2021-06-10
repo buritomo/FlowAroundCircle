@@ -8,20 +8,35 @@
 #include "boundary.h"
 #include "calc.h"
 #include "fds.h"
+#include "rungekutta.h"
+#include "output.h"
 
 int main(void) {
 	memorySet();
-	printf("%d, %d", II_STEP, JJ_STEP);
 	cordinateDefine();
 	metric();
 
 	initialValue();
 	boundaryValue();
 	calcInternalValues();
+	exportf();
+
+	setAssumedPotential();
 
 	while (time <= TIME_MAX) {
+		makePotential();
+		fds(II_DIR);
+		fds(JJ_DIR);
+		rungekutta();
+		inversePotentialToParams();
+		boundaryValue();
+		exportf();
 		time = time + DELTA_T;
+		//exportf();
 	}
-
+	
+	exportf();
+	releaseAssumedPotential();
+	releaseGrid();
 	return 0;
 }

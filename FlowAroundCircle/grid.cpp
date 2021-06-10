@@ -34,15 +34,18 @@ void memorySet(void) {
 }
 
 void cordinateDefine(void) {
+	double r = R_CIRCLE + DELTA_S, rb = r, theta;
 	for (int ki = 0; ki < II_STEP; ki++) {
 		for (int kj = 0; kj < JJ_STEP; kj++) {
 			int k = ki + kj * II_STEP;
-			double r = R_CIRCLE + ((double)ki - 2.0) * ((double)ki - 2.0) * DELTA_S;
 			double theta = 2 * M_PI * ((double)kj - 2.0) / ((double)JJ_STEP - 5.0);
 
 			x_cen[k] = r * cos(theta);
 			y_cen[k] = r * sin(theta);
 		}
+		//rb = r;
+		//r = R_CIRCLE + ((double)ki - 2.0) * ((double)ki - 2.0) * DELTA_S;
+		r = r * 1.05;
 	}
 	return;
 }
@@ -80,5 +83,34 @@ void metric(void) {
 			J_inv[k] = J_inv[k] - 0.5 * (x_cen[k + II_STEP] - x_cen[k + 1]) * (y_cen[k + II_STEP + 1] - y_cen[k]);
 		}
 	}
+	return;
+}
+
+void releaseGrid(void) {
+	free(rho);
+	free(ux);
+	free(vy);
+	free(e);
+	free(p);
+	free(H);
+	free(c);
+
+	free(Q);
+	free(E);
+	free(F);
+	free(Ehalf);
+	free(Fhalf);
+
+	free(x);
+	free(y);
+	free(x_cen);
+	free(y_cen);
+	
+	free(X_xi_half);
+	free(Y_xi_half);
+	free(X_eta_half);
+	free(Y_eta_half);
+	free(J_inv);
+
 	return;
 }

@@ -11,24 +11,24 @@ void initialValue(void) {
 	for (int ki = 2; ki < II_STEP - 3; ki++) {
 		for (int kj = 2; kj < JJ_STEP - 3; kj++) {
 			int k = ki + kj * II_STEP;
-			double r = sqrt(x[k] * x[k] + y[k] + y[k]);
+			double r = sqrt(x[k] * x[k] + y[k] * y[k]);
 			double theta;
 
 			if (y[k] > 0) {
 				theta = acos(x[k] / r);
 			}
 			else {
-				theta = -acos(x[k] / r);
+				theta = -1 * acos(x[k] / r);
 			}
 
-			double Vr = U_INF * (1 - (R_CIRCLE * R_CIRCLE) / (r * r)) * sin(theta);
-			double Vtheta = -U_INF * (1 - (R_CIRCLE * R_CIRCLE) / (r * r)) * cos(theta);
+			double Vr = U_INF * (1 - (R_CIRCLE * R_CIRCLE) / (r * r)) * cos(theta);
+			double Vtheta = -U_INF * (1 + (R_CIRCLE * R_CIRCLE) / (r * r)) * sin(theta);
 
 			ux[k] = Vr * cos(theta) - Vtheta * sin(theta);
-			vy[k] = Vr * sin(theta) - Vtheta * cos(theta);
+			vy[k] = Vr * sin(theta) + Vtheta * cos(theta);
 
 			rho[k] = RHO_INF;
-			p[k] = P_INF + (1 - 4 * sin(theta) * sin(theta)) * (rho[k] * U_INF * U_INF / 2);
+			p[k] = P_INF + 0.5 * rho[k] * (U_INF * U_INF - (ux[k] * ux[k] + vy[k] * vy[k]));
 		}
 	}
 	return;

@@ -53,7 +53,8 @@ double* e;
 double* p;
 double* H;
 double* c;
-double time;
+volatile double time;
+volatile double time_flag;
 //•Û‘¶—Ê
 double* Q;
 double* E;
@@ -83,6 +84,7 @@ extern double* p;
 extern double* H;
 extern double* c;
 extern volatile double time;
+extern volatile double time_flag;
 //•Û‘¶—Ê
 extern double* Q;
 extern double* E;

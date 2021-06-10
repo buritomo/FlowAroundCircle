@@ -116,6 +116,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -130,6 +131,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -145,6 +147,8 @@
     <ClCompile Include="initial.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="fds.cpp" />
+    <ClCompile Include="output.cpp" />
+    <ClCompile Include="rungekutta.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="boundary.h" />
@@ -153,6 +157,8 @@
     <ClInclude Include="global.h" />
     <ClInclude Include="grid.h" />
     <ClInclude Include="initial.h" />
+    <ClInclude Include="output.h" />
+    <ClInclude Include="rungekutta.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -10,15 +10,15 @@ void fds(int dir) {
     int kx_min, ky_min;
 
     if (dir == II_DIR) {
-        kx_min = 1;
+        kx_min = 2;
         kx_max = II_STEP - 2;
-        ky_min = 0;
-        ky_max = JJ_STEP - 1;
+        ky_min = 2;
+        ky_max = JJ_STEP - 2;
     }
     else {
-        kx_min = 0;
-        kx_max = II_STEP - 1;
-        ky_min = 1;
+        kx_min = 2;
+        kx_max = II_STEP - 2;
+        ky_min = 2;
         ky_max = JJ_STEP - 2;
     }
 
@@ -134,7 +134,7 @@ void LeftArray(double* L) {
     L[1 + 4 * 3] = -1 * b2;
     L[2 + 4 * 0] = 0.5 * (b1 - Z_var / c_ave);
     L[2 + 4 * 1] = 0.5 * (k_x_var / c_ave - b2 * u_ave);
-    L[2 + 4 * 2] = 0.5 * (k_y_var / c_ave - b2 * v_ave);//最初のマイナス要らなくない？
+    L[2 + 4 * 2] = 0.5 * (k_y_var / c_ave - b2 * v_ave);
     L[2 + 4 * 3] = 0.5 * b2;
     L[3 + 4 * 0] = k_y_var * u_ave - k_x_var * v_ave;
     L[3 + 4 * 1] = -k_y_var;
