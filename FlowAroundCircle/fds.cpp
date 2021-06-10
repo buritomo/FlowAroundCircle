@@ -10,7 +10,7 @@ void fds(int dir) {
     int kx_min, ky_min;
 
     if (dir == II_DIR) {
-        kx_min = 2;
+        kx_min = 1;
         kx_max = II_STEP - 2;
         ky_min = 2;
         ky_max = JJ_STEP - 2;
@@ -18,7 +18,7 @@ void fds(int dir) {
     else {
         kx_min = 2;
         kx_max = II_STEP - 2;
-        ky_min = 2;
+        ky_min = 1;
         ky_max = JJ_STEP - 2;
     }
 
@@ -33,7 +33,10 @@ void fds(int dir) {
             else {
                 J_bd = 1 / ((J_inv[k] + J_inv[k + II_STEP]) / 2);
             }
-
+            /*
+            if (k == 316) {
+                printf("!!!");
+            }*/
 
             muscl(&rho_L, &rho_R, rho, k, dir);
             muscl(&u_L, &u_R, ux, k, dir);

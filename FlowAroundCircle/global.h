@@ -21,11 +21,11 @@
 /*	Cell	0~STEP+3(II_STEP-2) の STEP+4個(II_STEP-1)	*/
 /*	Cellのうち両側2点は仮想格子							*/
 /*	計算点はゆえにSTEP個(II_STEP-5)						*/
-#define DELTA_T 0.00001
+#define DELTA_T 1e-8
 #define STEP 100
 #define II_STEP (STEP + 5)
 #define JJ_STEP (STEP + 5)
-#define DELTA_S 0.00002
+#define DELTA_S 2e-5
 #define TIME_MAX 1.00
 
 //ステップ境界定義

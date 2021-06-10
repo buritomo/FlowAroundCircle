@@ -37,6 +37,10 @@ void inversePotentialToParams(void) {
             int dim2 = k + 1 * II_STEP * JJ_STEP;
             int dim3 = k + 2 * II_STEP * JJ_STEP;
             int dim4 = k + 3 * II_STEP * JJ_STEP;
+            /*
+            if (k == 10713) {
+                printf("???");
+            }*/
 
             rho[k] = Q[dim1] / J_inv[k];
             ux[k] = Q[dim2] / rho[k] / J_inv[k];

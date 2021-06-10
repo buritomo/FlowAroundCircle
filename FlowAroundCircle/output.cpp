@@ -7,12 +7,12 @@
 void exportf(void) {
     char filename[100], filedata[100];
     int step_cnt = (time / DELTA_T);
-    int max_step_cnt = (int)(TIME_MAX / DELTA_T / 100);
+    int max_step_cnt = (int)(TIME_MAX / DELTA_T / 10000);
 
-    //if (step_cnt % max_step_cnt == 0) {
+    if (step_cnt % max_step_cnt == 0) {
         FILE* fp;
-        sprintf(filename, "Time%.3fsec.txt", time);
-        sprintf(filedata, "Time%.3fsec.data", time);
+        sprintf(filename, "Time%.6fsec.txt", time);
+        sprintf(filedata, "Time%.6fsec.data", time);
 
         fp = fopen(filename, "w");
 
@@ -28,7 +28,7 @@ void exportf(void) {
             fprintf(fp, "\n");
         }
         fclose(fp);
-    //}
+    }
 
     return;
 }

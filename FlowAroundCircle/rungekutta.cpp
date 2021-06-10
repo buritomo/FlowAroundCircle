@@ -62,7 +62,7 @@ void rungekutta(void) {
                     //step = (y[l + II_STEP] + x[l - II_STEP] - 2 * x[l]);
                     //kari[l + II_STEP * JJ_STEP * m] = kari[l + II_STEP * JJ_STEP * m] - lam[k] * DELTA_T * (0.5 * (Y_eta_half[l] + Y_eta_half[l + II_STEP])) * (Fhalf[l + II_STEP * JJ_STEP * m] - Fhalf[l + II_STEP * JJ_STEP * m - II_STEP]);
                     //kari[l + II_STEP * JJ_STEP * m] = kari[l + II_STEP * JJ_STEP * m] - lam[k] * DELTA_T / step * (0.5 * (X_xi_half[l] + X_xi_half[l + 1])) * (Ehalf[l + II_STEP * JJ_STEP * m] - Ehalf[l + II_STEP * JJ_STEP * m - 1]);
-                    kari[l + II_STEP * JJ_STEP * m] = kari[l + II_STEP * JJ_STEP * m] - lam[k] * DELTA_T * (Ehalf[l + II_STEP * JJ_STEP * m] - Ehalf[l + II_STEP * JJ_STEP * m - 1]);
+                    kari[l + II_STEP * JJ_STEP * m] = kari[l + II_STEP * JJ_STEP * m] - lam[k] * DELTA_T * (Fhalf[l + II_STEP * JJ_STEP * m] - Fhalf[l + II_STEP * JJ_STEP * m - II_STEP]);
                 }
 
             }
