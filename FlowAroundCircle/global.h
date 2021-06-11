@@ -55,6 +55,7 @@ double* H;
 double* c;
 volatile double time;
 volatile double time_flag;
+volatile int error_flag;
 //•Û‘¶—Ê
 double* Q;
 double* E;
@@ -85,6 +86,7 @@ extern double* H;
 extern double* c;
 extern volatile double time;
 extern volatile double time_flag;
+extern volatile int error_flag;
 //•Û‘¶—Ê
 extern double* Q;
 extern double* E;

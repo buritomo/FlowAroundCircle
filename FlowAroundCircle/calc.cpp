@@ -55,9 +55,9 @@ void inversePotentialToParams(void) {
 }
 
 void printTimer(void) {
-    if ((time - time_flag) > (TIME_MAX / 1000)) {
+    if ((time - time_flag) > (TIME_MAX / 1000000)) {
         double rate = time / TIME_MAX * 100.0;
-        printf("%.1f %% is finished....\n", rate);
+        printf("%.6f %% is finished....\n", rate);
         time_flag = time;
     }
     return;

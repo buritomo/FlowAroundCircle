@@ -205,6 +205,7 @@ void RoeAverage(void) {
     c_ave = sqrt((GAMMA - 1) * (H_ave - 0.5 * (u_ave * u_ave + v_ave * v_ave)));
     if (isnan(c_ave)) {
         printf("Here!\n");
+        error_flag = 1;
     }
 
     return;

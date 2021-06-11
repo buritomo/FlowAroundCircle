@@ -12,6 +12,7 @@
 #include "output.h"
 
 int main(void) {
+	error_flag = 0;
 	memorySet();
 	cordinateDefine();
 	metric();
@@ -31,6 +32,8 @@ int main(void) {
 		inversePotentialToParams();
 		boundaryValue();
 		exportf();
+		ErrorExport();
+		printTimer();
 		time = time + DELTA_T;
 		//exportf();
 	}
