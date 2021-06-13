@@ -38,7 +38,7 @@ void ErrorExport(void) {
     int step_cnt = (time / DELTA_T);
     int max_step_cnt = (int)(TIME_MAX / DELTA_T / 10000);
 
-    if (error_flag) {
+    if (error_flag == 1) {
         FILE* fp;
         sprintf(filename, "Time%.8fsec.plt", time);
         sprintf(filedata, "Time%.8fsec.plt", time);
@@ -57,10 +57,10 @@ void ErrorExport(void) {
             fprintf(fp, "\n");
         }
         fclose(fp);
-    }
 
-    printf("Error Happen!!");
-    exit(1);
+        printf("Error Happen!!");
+        exit(1);
+    }
 
     return;
 }
