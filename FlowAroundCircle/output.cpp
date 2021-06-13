@@ -20,8 +20,8 @@ void exportf(void) {
         fprintf(fp, "TARIABLES = \"X\", \"Y\", \"rho\", \"ux\", \"uy\", \"e\", \"p\", \"H\", \"c\", \"X_xi\", \"Y_xi\", \"X_eta\", \"Y_eta\", \"J_inv\" \n");
         fprintf(fp, "ZONE T=\"th\", I=101,J=101 ,F=POINT\n");
 
-        for (int ki = 2; ki < II_STEP - 2; ki++) {
-            for (int kj = 2; kj < JJ_STEP - 2; kj++) {
+        for (int ki = 2; ki < II_STEP - 3; ki++) {
+            for (int kj = 0; kj < JJ_STEP - 1; kj++) {
                 int k = ki + kj * II_STEP;
                 fprintf(fp, "%.8f %.8f %.8f %.8f %.8f %.8f %.8f %.8f %.8f %.8f %.8f %.8f %.8f %.8f\n", x[k], y[k], rho[k], ux[k], vy[k], e[k], p[k], H[k], c[k], X_xi_half[k], Y_xi_half[k], X_eta_half[k], Y_eta_half[k], J_inv[k]);
             }

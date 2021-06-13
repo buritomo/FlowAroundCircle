@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include "global.h"
 #include "boundary.h"
+#define _USE_MATH_DEFINES//math.h‚ðŽg‚¦‚é‚æ‚¤‚É‚·‚éƒRƒ}ƒ“ƒh
+#include "math.h"
 
 void boundaryValue(void) {
     /*•Ç–Ê‹«ŠEðŒ*/
@@ -10,15 +12,26 @@ void boundaryValue(void) {
         int ki2 = 1 + kj * II_STEP;//‰¼‘zŠiŽq
         int ki = 2 + kj * II_STEP;//ŒvŽZŠiŽq
 
+        double r = sqrt(x[ki] * x[ki] + y[ki] * y[ki]);
+        double theta;
+
+        if (y[ki] > 0) {
+            theta = acos(x[ki] / r);
+        }
+        else {
+            theta = -1 * acos(x[ki] / r);
+        }
+        double Vtheta = -ux[ki] * sin(theta) + vy[ki] * cos(theta);
+
         rho[ki1] = rho[ki];
         p[ki1] = p[ki];
-        ux[ki1] = ux[ki];
-        vy[ki1] = vy[ki];
+        ux[ki1] = -Vtheta * sin(theta);
+        vy[ki1] = Vtheta * cos(theta);
 
         rho[ki2] = rho[ki];
         p[ki2] = p[ki];
-        ux[ki2] = ux[ki];
-        vy[ki2] = vy[ki];
+        ux[ki2] = -Vtheta * sin(theta);
+        vy[ki2] = Vtheta * cos(theta);
     }
 
 
