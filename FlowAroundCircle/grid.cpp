@@ -34,7 +34,7 @@ void memorySet(void) {
 }
 
 void cordinateDefine(void) {
-	double r = R_CIRCLE + DELTA_S, rb = r, theta;
+	double r = R_CIRCLE, dr = DELTA_S, theta;
 	for (int ki = 0; ki < II_STEP; ki++) {
 		for (int kj = 0; kj < JJ_STEP; kj++) {
 			int k = ki + kj * II_STEP;
@@ -45,7 +45,8 @@ void cordinateDefine(void) {
 		}
 		//rb = r;
 		//r = R_CIRCLE + ((double)ki - 2.0) * ((double)ki - 2.0) * DELTA_S;
-		r = r * 1.05;
+		r = r + dr;
+		dr = dr * 1.05;
 	}
 	return;
 }
