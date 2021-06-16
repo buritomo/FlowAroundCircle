@@ -5,6 +5,7 @@
 #define GAMMA 1.4
 #define R_CIRCLE 0.1
 #define RAIR 287.04
+#define MU 1.820e-5
 
 //–³ŒÀ‰“•û’è”
 #define U_INF 20.0
@@ -65,6 +66,9 @@ double* E;
 double* F;
 double* Ehalf;
 double* Fhalf;
+//”S«€
+double* Ev;
+double* Fv;
 //À•W
 double* x;
 double* y;
@@ -102,6 +106,9 @@ extern double* E;
 extern double* F;
 extern double* Ehalf;
 extern double* Fhalf;
+//”S«€
+extern double* Ev;
+extern double* Fv;
 //À•W
 extern double* x;
 extern double* y;

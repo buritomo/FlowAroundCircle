@@ -41,10 +41,6 @@ void rungekutta(void) {
         for (int lx = 2; lx < II_STEP - 2; lx++) {
             for (int ly = 0; ly < JJ_STEP - 1; ly++) {
                 int l = lx + ly * II_STEP;
-                /*
-                if (l == 51) {
-                    printf("");
-                }*/
                 for (int m = 0; m < 4; m++) {
                     kari[l + II_STEP * JJ_STEP * m] = kari[l + II_STEP * JJ_STEP * m] - lam[k] * DELTA_T * (Ehalf[l + II_STEP * JJ_STEP * m] - Ehalf[l + II_STEP * JJ_STEP * m - 1]);
                 }
@@ -58,6 +54,29 @@ void rungekutta(void) {
                 int l = lx + ly * II_STEP;
                 for (int m = 0; m < 4; m++) {
                     kari[l + II_STEP * JJ_STEP * m] = kari[l + II_STEP * JJ_STEP * m] - lam[k] * DELTA_T * (Fhalf[l + II_STEP * JJ_STEP * m] - Fhalf[l + II_STEP * JJ_STEP * m - II_STEP]);
+                }
+
+            }
+        }
+    }
+
+    for (int k = 0; k < 4; k++) {
+        for (int lx = 2; lx < II_STEP - 2; lx++) {
+            for (int ly = 0; ly < JJ_STEP - 1; ly++) {
+                int l = lx + ly * II_STEP;
+                for (int m = 0; m < 4; m++) {
+                    kari[l + II_STEP * JJ_STEP * m] = kari[l + II_STEP * JJ_STEP * m] - lam[k] * DELTA_T * (Ev[l + II_STEP * JJ_STEP * m] - Ev[l + II_STEP * JJ_STEP * m - 1]);
+                }
+            }
+        }
+    }
+
+    for (int k = 0; k < 4; k++) {
+        for (int lx = 0; lx < II_STEP - 1; lx++) {
+            for (int ly = 2; ly < JJ_STEP - 2; ly++) {
+                int l = lx + ly * II_STEP;
+                for (int m = 0; m < 4; m++) {
+                    kari[l + II_STEP * JJ_STEP * m] = kari[l + II_STEP * JJ_STEP * m] - lam[k] * DELTA_T * (Fv[l + II_STEP * JJ_STEP * m] - Fv[l + II_STEP * JJ_STEP * m - II_STEP]);
                 }
 
             }

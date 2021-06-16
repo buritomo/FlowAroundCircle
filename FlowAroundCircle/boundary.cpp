@@ -11,40 +11,19 @@ void boundaryValue(void) {
         int ki1 = 0 + kj * II_STEP;//âºëzäiéq
         int ki2 = 1 + kj * II_STEP;//âºëzäiéq
         int ki = 2 + kj * II_STEP;//åvéZäiéq
-
-        double r = sqrt(x[ki] * x[ki] + y[ki] * y[ki]);
-        double theta;
-
-        if (y[ki] > 0) {
-            theta = acos(x[ki] / r);
-        }
-        else {
-            theta = -1 * acos(x[ki] / r);
-        }
-        double Vtheta = -ux[ki] * sin(theta) + vy[ki] * cos(theta);
-        double Vr = ux[ki] * cos(theta) + vy[ki] * sin(theta);
-
-        //Vr = 0;
-
+        int kb = 3 + kj * II_STEP;//åvéZäiéq
 
         rho[ki1] = rho[ki];
         p[ki1] = p[ki];
-        ux[ki1] = -Vr * cos(theta) - Vtheta * sin(theta);
-        vy[ki1] = -Vr * sin(theta) + Vtheta * cos(theta);
+        ux[ki1] = -ux[ki];
+        vy[ki1] = -vy[ki];
         e[ki1] = rho[ki1] * (p[ki1] / (rho[ki1] * (GAMMA - 1)) + 0.5 * (ux[ki1] * ux[ki1] + vy[ki1] * vy[ki1]));
-        //ux[ki1] = ux[ki];
-        //vy[ki1] = vy[ki];
-
-        Vtheta = -ux[ki1] * sin(theta) + vy[ki1] * cos(theta);
-        Vr = ux[ki1] * cos(theta) + vy[ki1] * sin(theta);
 
         rho[ki2] = rho[ki];
         p[ki2] = p[ki];
-        ux[ki2] = Vr * cos(theta) - Vtheta * sin(theta);
-        vy[ki2] = Vr * sin(theta) + Vtheta * cos(theta);
+        ux[ki2] = -ux[kb];
+        vy[ki2] = -vy[kb];
         e[ki2] = rho[ki2] * (p[ki2] / (rho[ki2] * (GAMMA - 1)) + 0.5 * (ux[ki2] * ux[ki2] + vy[ki2] * vy[ki2]));
-        //ux[ki2] = ux[ki];
-        //vy[ki2] = vy[ki];
     }
 
 

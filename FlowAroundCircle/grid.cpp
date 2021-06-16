@@ -19,6 +19,9 @@ void memorySet(void) {
 	Ehalf = (double* )malloc(sizeof(double) * II_STEP * JJ_STEP * 4);
 	Fhalf = (double* )malloc(sizeof(double) * II_STEP * JJ_STEP * 4);
 
+	Ev = (double*)malloc(sizeof(double) * II_STEP * JJ_STEP * 4);
+	Fv = (double*)malloc(sizeof(double) * II_STEP * JJ_STEP * 4);
+
 	x = (double* )malloc(sizeof(double) * II_STEP * JJ_STEP);
 	y = (double* )malloc(sizeof(double) * II_STEP * JJ_STEP);
 	x_cen = (double* )malloc(sizeof(double) * II_STEP * JJ_STEP);
@@ -126,6 +129,9 @@ void releaseGrid(void) {
 	free(F);
 	free(Ehalf);
 	free(Fhalf);
+
+	free(Ev);
+	free(Fv);
 
 	free(x);
 	free(y);
