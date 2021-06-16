@@ -22,16 +22,29 @@ void boundaryValue(void) {
             theta = -1 * acos(x[ki] / r);
         }
         double Vtheta = -ux[ki] * sin(theta) + vy[ki] * cos(theta);
+        double Vr = ux[ki] * cos(theta) + vy[ki] * sin(theta);
+
+        //Vr = 0;
+
 
         rho[ki1] = rho[ki];
         p[ki1] = p[ki];
-        ux[ki1] = -Vtheta * sin(theta);
-        vy[ki1] = Vtheta * cos(theta);
+        ux[ki1] = -Vr * cos(theta) - Vtheta * sin(theta);
+        vy[ki1] = -Vr * sin(theta) + Vtheta * cos(theta);
+        e[ki1] = rho[ki1] * (p[ki1] / (rho[ki1] * (GAMMA - 1)) + 0.5 * (ux[ki1] * ux[ki1] + vy[ki1] * vy[ki1]));
+        //ux[ki1] = ux[ki];
+        //vy[ki1] = vy[ki];
+
+        Vtheta = -ux[ki1] * sin(theta) + vy[ki1] * cos(theta);
+        Vr = ux[ki1] * cos(theta) + vy[ki1] * sin(theta);
 
         rho[ki2] = rho[ki];
         p[ki2] = p[ki];
-        ux[ki2] = -Vtheta * sin(theta);
-        vy[ki2] = Vtheta * cos(theta);
+        ux[ki2] = Vr * cos(theta) - Vtheta * sin(theta);
+        vy[ki2] = Vr * sin(theta) + Vtheta * cos(theta);
+        e[ki2] = rho[ki2] * (p[ki2] / (rho[ki2] * (GAMMA - 1)) + 0.5 * (ux[ki2] * ux[ki2] + vy[ki2] * vy[ki2]));
+        //ux[ki2] = ux[ki];
+        //vy[ki2] = vy[ki];
     }
 
 
@@ -42,16 +55,26 @@ void boundaryValue(void) {
     for (int kj = J_INLET_MIN; kj <= J_INLET_MAX; kj++) {
         int ko1 = (II_STEP - 2) + kj * II_STEP;//‰¼‘zŠiŽq
         int ko2 = (II_STEP - 3) + kj * II_STEP;//‰¼‘zŠiŽq
-
-        ux[ko1] = U_INF;
-        vy[ko1] = 0;
-        p[ko1] = P_INF;
-        rho[ko1] = RHO_INF;
+        int ki1 = (II_STEP - 4) + kj * II_STEP;//ŒvŽZŠiŽq
+        int ki2 = (II_STEP - 5) + kj * II_STEP;//ŒvŽZŠiŽq
 
         ux[ko2] = U_INF;
         vy[ko2] = 0;
-        p[ko2] = P_INF;
-        rho[ko2] = RHO_INF;
+        //p[ko2] = P_INF;
+        //rho[ko2] = RHO_INF;
+        p[ko2] = p[ki1] + (p[ki1] - p[ki2]);
+        rho[ko2] = rho[ki1] + (rho[ki1] - rho[ki2]);
+        e[ko2] = rho[ko2] * (p[ko2] / (rho[ko2] * (GAMMA - 1)) + 0.5 * (ux[ko2] * ux[ko2] + vy[ko2] * vy[ko2]));
+
+        ux[ko1] = U_INF;
+        vy[ko1] = 0;
+        //p[ko1] = P_INF;//ŠO‘}‚Ì•û‚ª‚¢‚¢
+        //rho[ko1] = RHO_INF;//
+        p[ko1] = p[ko2] + (p[ko2] - p[ki1]);
+        rho[ko1] = rho[ko2] + (rho[ko2] - rho[ki1]);
+        e[ko1] = rho[ko1] * (p[ko1] / (rho[ko1] * (GAMMA - 1)) + 0.5 * (ux[ko1] * ux[ko1] + vy[ko1] * vy[ko1]));
+
+
     }
 
     /*oŒû‹«ŠEðŒ*/
@@ -75,6 +98,9 @@ void boundaryValue(void) {
 
         rho[ko2] = rho[ko3] + (rho[ko3] - rho[ko4]);
         rho[ko1] = rho[ko2] + (rho[ko2] - rho[ko3]);
+
+        e[ko2] = rho[ko2] * (p[ko2] / (rho[ko2] * (GAMMA - 1)) + 0.5 * (ux[ko2] * ux[ko2] + vy[ko2] * vy[ko2]));
+        e[ko1] = rho[ko1] * (p[ko1] / (rho[ko1] * (GAMMA - 1)) + 0.5 * (ux[ko1] * ux[ko1] + vy[ko1] * vy[ko1]));
     }
 
     for (int kj = J_OUTLET_MIN; kj <= J_OUTLET_END; kj++) {
@@ -94,6 +120,9 @@ void boundaryValue(void) {
 
         rho[ko2] = rho[ko3] + (rho[ko3] - rho[ko4]);
         rho[ko1] = rho[ko2] + (rho[ko2] - rho[ko3]);
+
+        e[ko2] = rho[ko2] * (p[ko2] / (rho[ko2] * (GAMMA - 1)) + 0.5 * (ux[ko2] * ux[ko2] + vy[ko2] * vy[ko2]));
+        e[ko1] = rho[ko1] * (p[ko1] / (rho[ko1] * (GAMMA - 1)) + 0.5 * (ux[ko1] * ux[ko1] + vy[ko1] * vy[ko1]));
     }
 
     /*ŽüŠú‹«ŠEðŒ*/
@@ -112,21 +141,25 @@ void boundaryValue(void) {
         vy[ks1] = vy[kgb];
         p[ks1] = p[kgb];
         rho[ks1] = rho[kgb];
+        e[ks1] = rho[ks1] * (p[ks1] / (rho[ks1] * (GAMMA - 1)) + 0.5 * (ux[ks1] * ux[ks1] + vy[ks1] * vy[ks1]));
 
         ux[ks0] = ux[kg];
         vy[ks0] = vy[kg];
         p[ks0] = p[kg];
         rho[ks0] = rho[kg];
+        e[ks0] = rho[ks0] * (p[ks0] / (rho[ks0] * (GAMMA - 1)) + 0.5 * (ux[ks0] * ux[ks0] + vy[ks0] * vy[ks0]));
 
         ux[kg0] = ux[ks];
         vy[kg0] = vy[ks];
         p[kg0] = p[ks];
         rho[kg0] = rho[ks];
+        e[kg0] = rho[kg0] * (p[kg0] / (rho[kg0] * (GAMMA - 1)) + 0.5 * (ux[kg0] * ux[kg0] + vy[kg0] * vy[kg0]));
 
         ux[kg1] = ux[k1];
         vy[kg1] = vy[k1];
         p[kg1] = p[k1];
         rho[kg1] = rho[k1];
+        e[kg1] = rho[kg1] * (p[kg1] / (rho[kg1] * (GAMMA - 1)) + 0.5 * (ux[kg1] * ux[kg1] + vy[kg1] * vy[kg1]));
     }
 
     return;

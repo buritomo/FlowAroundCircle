@@ -22,6 +22,7 @@
 /*	Cellのうち両側2点は仮想格子							*/
 /*	計算点はゆえにSTEP個(II_STEP-5)						*/
 #define DELTA_T 1e-8
+//#define DELTA_T 1e-9
 #define STEP 100
 #define II_STEP (STEP + 5)
 #define JJ_STEP (STEP + 5)
@@ -49,6 +50,8 @@
 double* rho;
 double* ux;
 double* vy;
+double* Ur;
+double* Vtheta;
 double* e;
 double* p;
 double* H;
@@ -67,11 +70,17 @@ double* x;
 double* y;
 double* x_cen;//セル中心
 double* y_cen;//セル中心
+double* rvec;
+double* thetaVec;
 //一般化座標関連，メトリックとヤコビアン
 double* X_xi_half;
 double* Y_xi_half;
 double* X_eta_half;
 double* Y_eta_half;
+double* XI_x;
+double* XI_y;
+double* Eta_x;
+double* Eta_y;
 double* J_inv; 
 #else
 //物理量
@@ -98,11 +107,17 @@ extern double* x;
 extern double* y;
 extern double* x_cen;//セル中心
 extern double* y_cen;//セル中心
+extern double* rvec;
+extern double* thetaVec;
 //一般化座標関連，メトリックとヤコビアン
 extern double* X_xi_half;
 extern double* Y_xi_half;
 extern double* X_eta_half;
 extern double* Y_eta_half;
+extern double* XI_x;
+extern double* XI_y;
+extern double* Eta_x;
+extern double* Eta_y;
 extern double* J_inv;
 #endif
 

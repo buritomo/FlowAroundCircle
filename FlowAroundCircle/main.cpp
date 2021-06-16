@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 #define MAIN_C_
 
@@ -21,7 +22,7 @@ int main(void) {
 	boundaryValue();
 	calcInternalValues();
 	exportf();
-
+	system("pause");
 	setAssumedPotential();
 
 	while (time <= TIME_MAX) {

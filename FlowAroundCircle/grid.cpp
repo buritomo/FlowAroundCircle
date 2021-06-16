@@ -23,29 +23,39 @@ void memorySet(void) {
 	y = (double* )malloc(sizeof(double) * II_STEP * JJ_STEP);
 	x_cen = (double* )malloc(sizeof(double) * II_STEP * JJ_STEP);
 	y_cen = (double* )malloc(sizeof(double) * II_STEP * JJ_STEP);
+	rvec = (double*)malloc(sizeof(double) * II_STEP * JJ_STEP);
+	thetaVec = (double*)malloc(sizeof(double) * II_STEP * JJ_STEP);
 
 	X_xi_half = (double* )malloc(sizeof(double) * II_STEP * JJ_STEP);
 	Y_xi_half = (double* )malloc(sizeof(double) * II_STEP * JJ_STEP);
 	X_eta_half = (double* )malloc(sizeof(double) * II_STEP * JJ_STEP);
 	Y_eta_half = (double* )malloc(sizeof(double) * II_STEP * JJ_STEP);
+	XI_x = (double*)malloc(sizeof(double) * II_STEP * JJ_STEP);
+	XI_y = (double*)malloc(sizeof(double) * II_STEP * JJ_STEP);
+	Eta_x = (double*)malloc(sizeof(double) * II_STEP * JJ_STEP);
+	Eta_y = (double*)malloc(sizeof(double) * II_STEP * JJ_STEP);
 	J_inv = (double* )malloc(sizeof(double) * II_STEP * JJ_STEP);
 
 	return;
 }
 
 void cordinateDefine(void) {
-	double r = R_CIRCLE + DELTA_S, rb = r, theta;
+	double r = R_CIRCLE, dr = DELTA_S, theta;
 	for (int ki = 0; ki < II_STEP; ki++) {
 		for (int kj = 0; kj < JJ_STEP; kj++) {
+			
 			int k = ki + kj * II_STEP;
 			double theta = 2 * M_PI * ((double)kj - 2.0) / ((double)JJ_STEP - 5.0);
 
+			rvec[k] = r;
+			thetaVec[k] = theta;
 			x_cen[k] = r * cos(theta);
 			y_cen[k] = r * sin(theta);
+
+			//printf("%d, %lf\n", kj, theta);
 		}
-		//rb = r;
-		//r = R_CIRCLE + ((double)ki - 2.0) * ((double)ki - 2.0) * DELTA_S;
-		r = r * 1.05;
+		r = r + dr;
+		dr = dr * 1.08;
 	}
 	return;
 }
@@ -81,6 +91,22 @@ void metric(void) {
 			int kp = (kx + 1) + (kj + 1) * II_STEP;
 			J_inv[k] = 0.5 * (x_cen[k + II_STEP + 1] - x_cen[k]) * (y_cen[k + II_STEP] - y_cen[k + 1]);
 			J_inv[k] = J_inv[k] - 0.5 * (x_cen[k + II_STEP] - x_cen[k + 1]) * (y_cen[k + II_STEP + 1] - y_cen[k]);
+		}
+	}
+
+	for (int kx = 0; kx < II_STEP - 1; kx++) {
+		for (int kj = 0; kj < JJ_STEP - 1; kj++) {
+			int k = kx + kj * II_STEP;
+			Eta_y[k] = X_xi_half[k] / J_inv[k];
+			Eta_x[k] = -Y_xi_half[k] / J_inv[k];
+		}
+	}
+
+	for (int kx = 0; kx < II_STEP - 1; kx++) {
+		for (int kj = 0; kj < JJ_STEP - 1; kj++) {
+			int k = kx + kj * II_STEP;
+			XI_y[k] = -X_eta_half[k] / J_inv[k];
+			XI_x[k] = Y_eta_half[k] / J_inv[k];
 		}
 	}
 	return;
