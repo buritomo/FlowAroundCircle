@@ -5,7 +5,10 @@
 #define GAMMA 1.4
 #define R_CIRCLE 0.1
 #define RAIR 287.04
-#define MU 18.24e-6
+#define MU_0 18.24e-6
+#define T_0 293.15
+#define C 110.4
+#define PR 0.72
 
 //–³ŒÀ‰“•û’è”
 #define U_INF 20.0

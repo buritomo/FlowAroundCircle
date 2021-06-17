@@ -1,7 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#define _USE_MATH_DEFINES//math.hを使えるようにするコマンド
-#include <math.h>
 #include "global.h"
 #include "viscose.h"
 
@@ -31,8 +29,6 @@ void viscose(int dir) {
             calcMetric(k, dir);
             calcVelocityGra(k, dir);
             calcVeloBoundary(k, dir);
-            calcTemp(k, dir);
-            calcCoef(k, dir);
 
             tau_xx = 2 / 3 * MU * (2 * ux_dx - vy_dy);
             tau_xy = MU * (ux_dx + vy_dy);
@@ -146,78 +142,4 @@ void calcViscoseFactor(int k, int dir) {
         Fv[k + II_STEP * 3] = (eta_x * beta_x + eta_y * beta_y) * Jaco_inv;
     }
     return;
-}
-
-void calcCoef(int k, int dir) {
-    double mu_1, mu_2;
-    double kappa_1, kappa_2;
-    double cp = GAMMA * RAIR / (GAMMA - 1);
-
-    mu_1 = MU_0 * pow(T_a / T_0, 1.5) * (T_0 + C) / (T_a + C);
-    mu_2 = MU_0 * pow(T_b / T_0, 1.5) * (T_0 + C) / (T_b + C);
-    mu_ave = 0.5 * (mu_1 + mu_2);
-    kappa_ave = cp * mu_ave / PR;
-
-    return;
-}
-
-void calcTemp(int k, int dir) {
-    double cp = GAMMA * RAIR / (GAMMA - 1);
-    
-    if (dir == II_DIR) {
-        T_a = H[k] / cp;
-        T_b = H[k + 1] / cp;
-    }
-    else {
-        T_a = H[k] / cp;
-        T_b = H[k + II_STEP] / cp;
-    }
-    T = (T_a + T_b) / 2;
-    return;
-}
-
-void calcTGra(int k, int dir) {/////////
-    double T_xi, T_eta;
-    double k1, k2, k3, k4;
-
-    if (dir == II_DIR) {
-        T_xi = T[k + 1] - T[k];
-
-        k1 = T[k + II_STEP] - T[k];
-        k2 = T[k] - T[k - II_STEP];
-        k3 = T[k + II_STEP + 1] - T[k + 1];
-        k4 = T[k + 1] - T[k + 1 - II_STEP];
-        T_eta = (k1 + k2 + k3 + k4) / 4;
-
-        vy_xi = vy[k + 1] - vy[k];
-
-        k1 = vy[k + II_STEP] - vy[k];
-        k2 = vy[k] - vy[k - II_STEP];
-        k3 = vy[k + II_STEP + 1] - vy[k + 1];
-        k4 = vy[k + 1] - vy[k + 1 - II_STEP];
-        vy_eta = (k1 + k2 + k3 + k4) / 4;
-
-        ux_dx = xi_x * ux_xi + eta_x * ux_eta;
-        vy_dy = xi_y * vy_xi + eta_y * vy_eta;
-    }
-    else {
-        k1 = ux[k + 1] - ux[k];
-        k2 = ux[k] - ux[k - 1];
-        k3 = ux[k + II_STEP + 1] - ux[k + II_STEP];
-        k4 = ux[k + II_STEP] - ux[k + II_STEP - 1];
-        ux_xi = (k1 + k2 + k3 + k4) / 4;
-
-        ux_eta = ux[k + II_STEP] - ux[k];
-
-        k1 = vy[k + 1] - vy[k];
-        k2 = vy[k] - vy[k - 1];
-        k3 = vy[k + II_STEP + 1] - vy[k + II_STEP];
-        k4 = vy[k + II_STEP] - vy[k + II_STEP - 1];
-        vy_xi = (k1 + k2 + k3 + k4) / 4;
-
-        vy_eta = vy[k + II_STEP] - vy[k];
-
-        ux_dx = xi_x * ux_xi + eta_x * ux_eta;
-        vy_dy = xi_y * vy_xi + eta_y * vy_eta;
-    }
 }

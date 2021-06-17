@@ -11,6 +11,7 @@
 #include "fds.h"
 #include "rungekutta.h"
 #include "output.h"
+#include "viscose.h"
 
 int main(void) {
 	error_flag = 0;
@@ -22,6 +23,7 @@ int main(void) {
 	boundaryValue();
 	calcInternalValues();
 	exportf();
+	setExportBoundary();
 	system("pause");
 	setAssumedPotential();
 
@@ -29,6 +31,8 @@ int main(void) {
 		makePotential();
 		fds(II_DIR);
 		fds(JJ_DIR);
+		viscose(II_DIR);
+		viscose(JJ_DIR);
 		rungekutta();
 		inversePotentialToParams();
 		boundaryValue();
@@ -36,6 +40,7 @@ int main(void) {
 		ErrorExport();
 		printTimer();
 		time = time + DELTA_T;
+		exportBoundary();
 		//exportf();
 	}
 	
