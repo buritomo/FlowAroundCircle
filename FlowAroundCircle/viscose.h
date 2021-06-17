@@ -7,7 +7,7 @@ static double ux_dx, vy_dy;                //‘¬“x•Î”÷•ª
 static double ux_half, vy_half;            //‹«ŠE‚Å‚Ì‘¬“x
 static double tau_xx, tau_xy, tau_yy;      //‚¹‚ñ’f‰ž—Í
 static double beta_x, beta_y;
-static double T, T_a, T_b;
+//static double T, T_a, T_b;
 static double mu_ave, kappa_ave;
 static double T_dx, T_dy;
 
@@ -18,6 +18,7 @@ void calcMetric(int k, int dir);
 void calcVelocityGra(int k, int dir);
 void calcVeloBoundary(int k, int dir);
 void calcViscoseFactor(int k, int dir);
-void calcTemp(int k, int dir);
+double calcTemp(int k);
+void calcCoef(int k, int dir);
 
 #endif//VISCOSE_H_

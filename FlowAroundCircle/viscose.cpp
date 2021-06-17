@@ -31,15 +31,15 @@ void viscose(int dir) {
             calcMetric(k, dir);
             calcVelocityGra(k, dir);
             calcVeloBoundary(k, dir);
-            calcTemp(k, dir);
+            //calcTemp(k, dir);
             calcCoef(k, dir);
 
-            tau_xx = 2 / 3 * MU * (2 * ux_dx - vy_dy);
-            tau_xy = MU * (ux_dx + vy_dy);
-            tau_yy = 2 / 3 * MU * (2 * vy_dy - ux_dx);
+            tau_xx = 2 / 3 * mu_ave * (2 * ux_dx - vy_dy);
+            tau_xy = mu_ave * (ux_dx + vy_dy);
+            tau_yy = 2 / 3 * mu_ave * (2 * vy_dy - ux_dx);
 
-            beta_x = tau_xx * ux_half + tau_xy * vy_half;
-            beta_y = tau_xy * ux_half + tau_yy * vy_half;
+            beta_x = tau_xx * ux_half + tau_xy * vy_half + kappa_ave * T_dx;
+            beta_y = tau_xy * ux_half + tau_yy * vy_half + kappa_ave * T_dy;
 
             calcViscoseFactor(k, dir);
         }
@@ -149,9 +149,19 @@ void calcViscoseFactor(int k, int dir) {
 }
 
 void calcCoef(int k, int dir) {
+    double T_a, T_b;
     double mu_1, mu_2;
     double kappa_1, kappa_2;
     double cp = GAMMA * RAIR / (GAMMA - 1);
+
+    if (dir == II_DIR) {
+        T_a = calcTemp(k);
+        T_b = calcTemp(k + 1);
+    }
+    else {
+        T_a = calcTemp(k);
+        T_b = calcTemp(k + II_STEP);
+    }
 
     mu_1 = MU_0 * pow(T_a / T_0, 1.5) * (T_0 + C) / (T_a + C);
     mu_2 = MU_0 * pow(T_b / T_0, 1.5) * (T_0 + C) / (T_b + C);
@@ -161,9 +171,12 @@ void calcCoef(int k, int dir) {
     return;
 }
 
-void calcTemp(int k, int dir) {
+double calcTemp(int k){
+//void calcTemp(int k, int dir) {
     double cp = GAMMA * RAIR / (GAMMA - 1);
-    
+
+    return H[k] / cp;
+    /*
     if (dir == II_DIR) {
         T_a = H[k] / cp;
         T_b = H[k + 1] / cp;
@@ -173,51 +186,36 @@ void calcTemp(int k, int dir) {
         T_b = H[k + II_STEP] / cp;
     }
     T = (T_a + T_b) / 2;
-    return;
+    return;*/
 }
 
 void calcTGra(int k, int dir) {/////////
     double T_xi, T_eta;
+    double T_1_a, T_1_b;
+    double T_2_a, T_2_b, T_2_c, T_2_d;
     double k1, k2, k3, k4;
 
     if (dir == II_DIR) {
-        T_xi = T[k + 1] - T[k];
+        T_xi = calcTemp(k + 1) - calcTemp(k);
 
-        k1 = T[k + II_STEP] - T[k];
-        k2 = T[k] - T[k - II_STEP];
-        k3 = T[k + II_STEP + 1] - T[k + 1];
-        k4 = T[k + 1] - T[k + 1 - II_STEP];
+        k1 = calcTemp(k + II_STEP) - calcTemp(k);
+        k2 = calcTemp(k) - calcTemp(k - II_STEP);
+        k3 = calcTemp(k + II_STEP + 1) - calcTemp(k + 1);
+        k4 = calcTemp(k + 1) - calcTemp(k + 1 - II_STEP);
         T_eta = (k1 + k2 + k3 + k4) / 4;
-
-        vy_xi = vy[k + 1] - vy[k];
-
-        k1 = vy[k + II_STEP] - vy[k];
-        k2 = vy[k] - vy[k - II_STEP];
-        k3 = vy[k + II_STEP + 1] - vy[k + 1];
-        k4 = vy[k + 1] - vy[k + 1 - II_STEP];
-        vy_eta = (k1 + k2 + k3 + k4) / 4;
-
-        ux_dx = xi_x * ux_xi + eta_x * ux_eta;
-        vy_dy = xi_y * vy_xi + eta_y * vy_eta;
     }
     else {
-        k1 = ux[k + 1] - ux[k];
-        k2 = ux[k] - ux[k - 1];
-        k3 = ux[k + II_STEP + 1] - ux[k + II_STEP];
-        k4 = ux[k + II_STEP] - ux[k + II_STEP - 1];
-        ux_xi = (k1 + k2 + k3 + k4) / 4;
+        k1 = calcTemp(k + 1) - calcTemp(k);
+        k2 = calcTemp(k) - calcTemp(k - 1);
+        k3 = calcTemp(k + II_STEP + 1) - calcTemp(k + II_STEP);
+        k4 = calcTemp(k + II_STEP) - calcTemp(k + II_STEP - 1);
+        T_xi = (k1 + k2 + k3 + k4) / 4;
 
-        ux_eta = ux[k + II_STEP] - ux[k];
-
-        k1 = vy[k + 1] - vy[k];
-        k2 = vy[k] - vy[k - 1];
-        k3 = vy[k + II_STEP + 1] - vy[k + II_STEP];
-        k4 = vy[k + II_STEP] - vy[k + II_STEP - 1];
-        vy_xi = (k1 + k2 + k3 + k4) / 4;
-
-        vy_eta = vy[k + II_STEP] - vy[k];
-
-        ux_dx = xi_x * ux_xi + eta_x * ux_eta;
-        vy_dy = xi_y * vy_xi + eta_y * vy_eta;
+        T_eta = calcTemp(k + II_STEP) - calcTemp(k);
     }
+
+    T_dx = xi_x * T_xi + eta_x * T_eta;
+    T_dy = xi_y * T_xi + eta_y * T_eta;
+
+    return;
 }

@@ -48,7 +48,7 @@ void cordinateDefine(void) {
 		for (int kj = 0; kj < JJ_STEP; kj++) {
 			
 			int k = ki + kj * II_STEP;
-			double theta = 2 * M_PI * ((double)kj - 2.0) / ((double)JJ_STEP - 5.0);
+			theta = 2 * M_PI * ((double)kj - 2.0) / ((double)JJ_STEP - 5.0);
 
 			rvec[k] = r;
 			thetaVec[k] = theta;
