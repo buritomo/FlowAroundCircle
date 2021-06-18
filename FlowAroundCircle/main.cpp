@@ -36,6 +36,7 @@ int main(void) {
 		rungekutta();
 		inversePotentialToParams();
 		boundaryValue();
+		calcInternalValues();
 		exportf();
 		ErrorExport();
 		printTimer();

@@ -35,7 +35,7 @@ void viscose(int dir) {
             calcCoef(k, dir);
 
             tau_xx = 2 / 3 * mu_ave * (2 * ux_dx - vy_dy);
-            tau_xy = mu_ave * (ux_dx + vy_dy);
+            tau_xy = mu_ave * (ux_dy + vy_dx);
             tau_yy = 2 / 3 * mu_ave * (2 * vy_dy - ux_dx);
 
             beta_x = tau_xx * ux_half + tau_xy * vy_half + kappa_ave * T_dx;
@@ -93,9 +93,6 @@ void calcVelocityGra(int k, int dir) {
         k3 = vy[k + II_STEP + 1] - vy[k + 1];
         k4 = vy[k + 1] - vy[k + 1 - II_STEP];
         vy_eta = (k1 + k2 + k3 + k4) / 4;
-
-        ux_dx = xi_x * ux_xi + eta_x * ux_eta;
-        vy_dy = xi_y * vy_xi + eta_y * vy_eta;
     }
     else {
         k1 = ux[k + 1] - ux[k];
@@ -113,10 +110,13 @@ void calcVelocityGra(int k, int dir) {
         vy_xi = (k1 + k2 + k3 + k4) / 4;
 
         vy_eta = vy[k + II_STEP] - vy[k];
-
-        ux_dx = xi_x * ux_xi + eta_x * ux_eta;
-        vy_dy = xi_y * vy_xi + eta_y * vy_eta;
     }
+
+    ux_dx = xi_x * ux_xi + eta_x * ux_eta;
+    ux_dy = xi_y * ux_xi + eta_y * ux_eta;
+    vy_dy = xi_y * vy_xi + eta_y * vy_eta;
+    vy_dx = xi_x * vy_xi + eta_x * vy_eta;
+
     return;
 }
 
@@ -134,16 +134,16 @@ void calcVeloBoundary(int k, int dir) {
 
 void calcViscoseFactor(int k, int dir) {
     if (dir == II_DIR) {
-        Ev[k + II_STEP * 0] = 0;
-        Ev[k + II_STEP * 1] = (xi_x * tau_xx + xi_y * tau_xy) * Jaco_inv;
-        Ev[k + II_STEP * 2] = (xi_x * tau_xy + xi_y * tau_yy) * Jaco_inv;
-        Ev[k + II_STEP * 3] = (xi_x * beta_x + xi_y * beta_y) * Jaco_inv;
+        Ev[k + II_STEP * JJ_STEP * 0] = 0;
+        Ev[k + II_STEP * JJ_STEP * 1] = (xi_x * tau_xx + xi_y * tau_xy) * Jaco_inv;
+        Ev[k + II_STEP * JJ_STEP * 2] = (xi_x * tau_xy + xi_y * tau_yy) * Jaco_inv;
+        Ev[k + II_STEP * JJ_STEP * 3] = (xi_x * beta_x + xi_y * beta_y) * Jaco_inv;
     }
     else {
-        Fv[k + II_STEP * 0] = 0;
-        Fv[k + II_STEP * 1] = (eta_x * tau_xx + eta_y * tau_xy) * Jaco_inv;
-        Fv[k + II_STEP * 2] = (eta_x * tau_xy + eta_y * tau_yy) * Jaco_inv;
-        Fv[k + II_STEP * 3] = (eta_x * beta_x + eta_y * beta_y) * Jaco_inv;
+        Fv[k + II_STEP * JJ_STEP * 0] = 0;
+        Fv[k + II_STEP * JJ_STEP * 1] = (eta_x * tau_xx + eta_y * tau_xy) * Jaco_inv;
+        Fv[k + II_STEP * JJ_STEP * 2] = (eta_x * tau_xy + eta_y * tau_yy) * Jaco_inv;
+        Fv[k + II_STEP * JJ_STEP * 3] = (eta_x * beta_x + eta_y * beta_y) * Jaco_inv;
     }
     return;
 }

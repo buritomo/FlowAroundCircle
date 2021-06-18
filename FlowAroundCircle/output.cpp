@@ -18,10 +18,10 @@ void exportf(void) {
 
         fprintf(fp, "TITLE = \" %s \" \n", filedata);
         fprintf(fp, "TARIABLES = \"X\", \"Y\", \"rho\", \"ux\", \"uy\", \"e\", \"p\", \"H\", \"c\", \"X_xi\", \"Y_xi\", \"X_eta\", \"Y_eta\", \"J_inv\", \"X_cen\", \"Y_cen\", \"r\", \"theta\", \"XI_x\", \"XI_y\", \"ETA_x\", \"ETA_y\" \n");
-        fprintf(fp, "ZONE T=\"th\", I=101,J=101 ,F=POINT\n");
+        fprintf(fp, "ZONE T=\"th\", I=103,J=103 ,F=POINT\n");
 
-        for (int ki = 2; ki < II_STEP - 2; ki++) {
-            for (int kj = 2; kj < JJ_STEP - 2; kj++) {
+        for (int ki = 0; ki < II_STEP - 2; ki++) {
+            for (int kj = 0; kj < JJ_STEP - 2; kj++) {
                 int k = ki + kj * II_STEP;
                 fprintf(fp, "%.8f %.8f %.8f %.8f %.8f %.8f %.8f %.8f %.8f %.8f %.8f %.8f %.8f %.8f %.8f %.8f %.8f %.8f %.8f %.8f %.8f %.8f\n", x[k], y[k], rho[k], ux[k], vy[k], e[k], p[k], H[k], c[k], X_xi_half[k], Y_xi_half[k], X_eta_half[k], Y_eta_half[k], J_inv[k], x_cen[k], y_cen[k], rvec[k], thetaVec[k], XI_x[k], XI_y[k], Eta_x[k], Eta_y[k]);
                 //printf("%d, %lf\n", kj, thetaVec[k]);
@@ -48,10 +48,10 @@ void ErrorExport(void) {
 
         fprintf(fp, "TITLE = \" %s \" \n", filedata);
         fprintf(fp, "TARIABLES = \"X\", \"Y\", \"rho\", \"ux\", \"uy\", \"e\", \"p\", \"H\", \"c\", \"X_xi\", \"Y_xi\", \"X_eta\", \"Y_eta\", \"J_inv\", \"X_cen\", \"Y_cen\", \"r\", \"theta\" \n");
-        fprintf(fp, "ZONE T=\"th\", I=101,J=101 ,F=POINT\n");
+        fprintf(fp, "ZONE T=\"th\", I=103,J=103 ,F=POINT\n");
 
-        for (int ki = 2; ki < II_STEP - 2; ki++) {
-            for (int kj = 2; kj < JJ_STEP - 2; kj++) {
+        for (int ki = 0; ki < II_STEP - 2; ki++) {
+            for (int kj = 0; kj < JJ_STEP - 2; kj++) {
                 int k = ki + kj * II_STEP;
                 fprintf(fp, "%.8f %.8f %.8f %.8f %.8f %.8f %.8f %.8f %.8f %.8f %.8f %.8f %.8f %.8f %.8f %.8f %.8f %.8f\n", x[k], y[k], rho[k], ux[k], vy[k], e[k], p[k], H[k], c[k], X_xi_half[k], Y_xi_half[k], X_eta_half[k], Y_eta_half[k], J_inv[k], x_cen[k], y_cen[k], rvec[k], thetaVec[k]);
                 //printf("%d, %lf\n", kj, thetaVec[k]);

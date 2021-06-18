@@ -11,19 +11,19 @@ void boundaryValue(void) {
         int ki1 = 0 + kj * II_STEP;//âºëzäiéq
         int ki2 = 1 + kj * II_STEP;//âºëzäiéq
         int ki = 2 + kj * II_STEP;//åvéZäiéq
-        int kb = 3 + kj * II_STEP;//åvéZäiéq
+        //int kb = 3 + kj * II_STEP;//åvéZäiéq
+
+        rho[ki2] = rho[ki];
+        p[ki2] = p[ki];
+        ux[ki2] = -ux[ki];
+        vy[ki2] = -vy[ki];
+        e[ki2] = rho[ki1] * (p[ki1] / (rho[ki1] * (GAMMA - 1)) + 0.5 * (ux[ki1] * ux[ki1] + vy[ki1] * vy[ki1]));
 
         rho[ki1] = rho[ki];
         p[ki1] = p[ki];
         ux[ki1] = -ux[ki];
         vy[ki1] = -vy[ki];
-        e[ki1] = rho[ki1] * (p[ki1] / (rho[ki1] * (GAMMA - 1)) + 0.5 * (ux[ki1] * ux[ki1] + vy[ki1] * vy[ki1]));
-
-        rho[ki2] = rho[ki];
-        p[ki2] = p[ki];
-        ux[ki2] = -ux[kb];
-        vy[ki2] = -vy[kb];
-        e[ki2] = rho[ki2] * (p[ki2] / (rho[ki2] * (GAMMA - 1)) + 0.5 * (ux[ki2] * ux[ki2] + vy[ki2] * vy[ki2]));
+        e[ki1] = rho[ki2] * (p[ki2] / (rho[ki2] * (GAMMA - 1)) + 0.5 * (ux[ki2] * ux[ki2] + vy[ki2] * vy[ki2]));
     }
 
 
