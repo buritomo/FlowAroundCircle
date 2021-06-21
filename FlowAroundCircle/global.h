@@ -1,6 +1,8 @@
 #ifndef GLOBAL_H_
 #define GLOBAL_H_
 
+#define PARA
+
 //•¨«CŒvZ’è”
 #define GAMMA 1.4
 #define R_CIRCLE 0.1

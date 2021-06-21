@@ -11,10 +11,6 @@ void viscose(int dir) {
     int kx_min, ky_min;
     int kx, ky;
 
-#ifdef PARA
-#pragma omp parallel for private(kx, ky)
-#endif
-
     if (dir == II_DIR) {
         kx_min = 1;
         kx_max = II_STEP - 2;
@@ -28,6 +24,9 @@ void viscose(int dir) {
         ky_max = JJ_STEP - 2;
     }
 
+#ifdef PARA
+#pragma omp parallel for private(kx, ky)
+#endif
     for (kx = kx_min; kx < kx_max; kx++) {
         for (ky = ky_min; ky < ky_max; ky++) {
             int k = kx + ky * II_STEP;
