@@ -8,6 +8,7 @@
 void fds(int dir) {
     int kx_max, ky_max;
     int kx_min, ky_min;
+    int kx, ky;
 
     if (dir == II_DIR) {
         kx_min = 1;
@@ -21,10 +22,42 @@ void fds(int dir) {
         ky_min = 1;
         ky_max = JJ_STEP - 2;
     }
+#ifdef PARA
+#pragma omp parallel for private(kx, ky)
+#endif
+    for (kx = kx_min; kx < kx_max; kx++) {
+        for (ky = ky_min; ky < ky_max; ky++) {
 
-    for (int kx = kx_min; kx < kx_max; kx++) {
-        for (int ky = ky_min; ky < ky_max; ky++) {
             int k = kx + ky * II_STEP;
+			double b1, b2;
+			double Q_L[4];
+			double Q_R[4];
+			double E_L[4];
+			double E_R[4];
+			double F_L[4];
+			double F_R[4];
+			double R[4 * 4];
+			double L[4 * 4];
+			double lambda[4];
+			double w[4 * 4];
+			double J_bd;
+			double k_x, k_y;
+			double theta;
+			double Z;
+			double rho_L, rho_R;
+			double u_L, u_R;
+			double v_L, v_R;
+			double e_L, e_R;
+			double p_L, p_R;
+			double H_L, H_R;
+			double c_L, c_R;
+			double rho_ave;
+			double u_ave;
+			double v_ave;
+			double e_ave;
+			double p_ave;
+			double H_ave;
+			double c_ave;
 
             //‹«ŠE‚Å‚Ìƒ„ƒRƒrƒAƒ“ŒvŽZ
             if (dir == II_DIR) {
@@ -46,7 +79,7 @@ void fds(int dir) {
             muscl(&H_L, &H_R, H, k, dir);
             muscl(&c_L, &c_R, c, k, dir);
 
-            RoeAverage();
+            RoeAverage(&rho_ave, rho_L, rho_R, &u_ave, u_L, u_R, &v_ave, v_L, v_R, &H_ave, H_L, H_R, &c_ave);
             if (dir == II_DIR) {
                 k_x = Y_eta_half[k + 1] * J_bd;
                 k_y = -X_eta_half[k + 1] * J_bd;
@@ -60,10 +93,10 @@ void fds(int dir) {
             b1 = (u_ave * u_ave + v_ave * v_ave) / 2 * (GAMMA - 1) / c_ave / c_ave;
             b2 = (GAMMA - 1) / c_ave / c_ave;
 
-            RightArray(R);
-            LeftArray(L);
-            Lambda(lambda);
-            musclArray(k, dir);
+            RightArray(R, k_x, k_y, Z, u_ave, v_ave, c_ave, H_ave);
+            LeftArray(L, k_x, k_y, Z, u_ave, v_ave, c_ave, H_ave, b1, b2);
+            Lambda(lambda, k_x, k_y, c_ave, Z);
+            musclArray(k, dir, Q_L, Q_R, E_L, E_R, F_L, F_R, rho_L, rho_R, u_L, u_R, v_L, v_R, p_L, p_R, e_L, e_R, k_x, k_y, J_bd);
 
             for (int l = 0; l < 4; l++) {
                 for (int m = 0; m < 4; m++) {
@@ -95,11 +128,11 @@ void fds(int dir) {
     return;
 }
 
-void RightArray(double* R) {
+void RightArray(double* R, double k_x, double k_y, double Z, double u_ave, double v_ave, double c_ave, double H_ave) {
     double k_x_var = k_x / sqrt(k_x * k_x + k_y * k_y);
     double k_y_var = k_y / sqrt(k_x * k_x + k_y * k_y);
     double Z_var = Z / sqrt(k_x * k_x + k_y * k_y);
-    double theta_var = theta / sqrt(k_x * k_x + k_y * k_y);
+    //double theta_var = theta / sqrt(k_x * k_x + k_y * k_y);
 
     R[0 + 4 * 0] = 1;
     R[0 + 4 * 1] = 1;
@@ -121,11 +154,11 @@ void RightArray(double* R) {
     return;
 }
 
-void LeftArray(double* L) {
+void LeftArray(double* L, double k_x, double k_y, double Z, double u_ave, double v_ave, double c_ave, double H_ave, double b1, double b2) {
     double k_x_var = k_x / sqrt(k_x * k_x + k_y * k_y);
     double k_y_var = k_y / sqrt(k_x * k_x + k_y * k_y);
     double Z_var = Z / sqrt(k_x * k_x + k_y * k_y);
-    double theta_var = theta / sqrt(k_x * k_x + k_y * k_y);
+    //double theta_var = theta / sqrt(k_x * k_x + k_y * k_y);
 
     L[0 + 4 * 0] = 0.5 * (b1 + Z_var / c_ave);
     L[0 + 4 * 1] = -0.5 * (k_x_var / c_ave + b2 * u_ave);
@@ -147,7 +180,7 @@ void LeftArray(double* L) {
     return;
 }
 
-void Lambda(double* lambda) {
+void Lambda(double* lambda, double k_x, double k_y, double c_ave, double Z) {
     lambda[0] = fabs(Z - c_ave * sqrt(k_x * k_x + k_y * k_y));
     lambda[1] = fabs(Z);
     lambda[2] = fabs(Z + c_ave * sqrt(k_x * k_x + k_y * k_y));
@@ -156,7 +189,7 @@ void Lambda(double* lambda) {
     return;
 }
 
-void musclArray(int k, int dir) {
+void musclArray(int k, int dir, double *Q_L, double *Q_R, double *E_L, double *E_R, double *F_L, double *F_R, double rho_L, double rho_R, double u_L, double u_R, double v_L, double v_R, double p_L, double p_R, double e_L, double e_R, double k_x, double k_y, double J_bd) {
     Q_L[0] = rho_L / J_bd;
     Q_L[1] = rho_L * u_L / J_bd;
     Q_L[2] = rho_L * v_L / J_bd;
@@ -197,16 +230,19 @@ void musclArray(int k, int dir) {
     return;
 }
 
-void RoeAverage(void) {
-    rho_ave = sqrt(rho_L * rho_R);
-    u_ave = (sqrt(rho_L) * u_L + sqrt(rho_R) * u_R) / ((sqrt(rho_L) + sqrt(rho_R)));
-    v_ave = (sqrt(rho_L) * v_L + sqrt(rho_R) * v_R) / ((sqrt(rho_L) + sqrt(rho_R)));
-    H_ave = (sqrt(rho_L) * H_L + sqrt(rho_R) * H_R) / ((sqrt(rho_L) + sqrt(rho_R)));
-    c_ave = sqrt((GAMMA - 1) * (H_ave - 0.5 * (u_ave * u_ave + v_ave * v_ave)));
-    if (isnan(c_ave)) {
-        printf("Here!\n");
-        error_flag = 1;
-    }
+void RoeAverage(double* rho_ave, double rho_L, double rho_R, double* u_ave, double u_L, double u_R, double* v_ave, double v_L, double v_R, double* H_ave, double H_L, double H_R, double* c_ave) {
+    *rho_ave = sqrt(rho_L * rho_R);
+    *u_ave = (sqrt(rho_L) * u_L + sqrt(rho_R) * u_R) / ((sqrt(rho_L) + sqrt(rho_R)));
+    *v_ave = (sqrt(rho_L) * v_L + sqrt(rho_R) * v_R) / ((sqrt(rho_L) + sqrt(rho_R)));
+    *H_ave = (sqrt(rho_L) * H_L + sqrt(rho_R) * H_R) / ((sqrt(rho_L) + sqrt(rho_R)));
+
+    double uxAve = *u_ave;
+    double vyAve = *v_ave;
+    *c_ave = sqrt((GAMMA - 1) * (*H_ave - 0.5 * (uxAve * uxAve + vyAve * vyAve)));
+    //if (isnan(c_ave)) {
+    //    printf("Here!\n");
+    //    error_flag = 1;
+    //}
 
     return;
 }

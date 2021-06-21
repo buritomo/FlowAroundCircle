@@ -9,6 +9,11 @@ void viscose(int dir) {
     //ŒvŽZ”ÍˆÍ
     int kx_max, ky_max;
     int kx_min, ky_min;
+    int kx, ky;
+
+#ifdef PARA
+#pragma omp parallel for private(kx, ky)
+#endif
 
     if (dir == II_DIR) {
         kx_min = 1;
@@ -23,16 +28,28 @@ void viscose(int dir) {
         ky_max = JJ_STEP - 2;
     }
 
-    for (int kx = kx_min; kx < kx_max; kx++) {
-        for (int ky = ky_min; ky < ky_max; ky++) {
+    for (kx = kx_min; kx < kx_max; kx++) {
+        for (ky = ky_min; ky < ky_max; ky++) {
             int k = kx + ky * II_STEP;
 
-            caocJacobian(k, dir);
-            calcMetric(k, dir);
-            calcVelocityGra(k, dir);
-            calcVeloBoundary(k, dir);
+            double Jaco_inv;
+            double xi_x, xi_y, eta_x, eta_y;    //ƒƒgƒŠƒbƒN
+            double ux_dx, vy_dy;                //‘¬“x•Î”÷•ª
+            double ux_dy, vy_dx;
+            double ux_half, vy_half;            //‹«ŠE‚Å‚Ì‘¬“x
+            double tau_xx, tau_xy, tau_yy;      //‚¹‚ñ’f‰ž—Í
+            double beta_x, beta_y;
+            double mu_ave, kappa_ave;
+            double T_dx, T_dy;
+
+
+            caocJacobian(k, dir, &Jaco_inv);
+            calcMetric(k, dir, &xi_x, &xi_y, &eta_x, &eta_y, Jaco_inv);
+            calcVelocityGra(k, dir, &ux_dx, &ux_dy, &vy_dx, &vy_dy, xi_x, xi_y, eta_x, eta_y);
+            calcVeloBoundary(k, dir, &ux_half, &vy_half);
             //calcTemp(k, dir);
-            calcCoef(k, dir);
+            calcCoef(k, dir, &mu_ave, &kappa_ave);
+            calcTGra(k, dir, &T_dx, &T_dy, xi_x, xi_y, eta_x, eta_y);
 
             tau_xx = 2 / 3 * mu_ave * (2 * ux_dx - vy_dy);
             tau_xy = mu_ave * (ux_dy + vy_dx);
@@ -41,40 +58,40 @@ void viscose(int dir) {
             beta_x = tau_xx * ux_half + tau_xy * vy_half + kappa_ave * T_dx;
             beta_y = tau_xy * ux_half + tau_yy * vy_half + kappa_ave * T_dy;
 
-            calcViscoseFactor(k, dir);
+            calcViscoseFactor(k, dir, xi_x, xi_y, eta_x, eta_y, tau_xx, tau_xy, tau_yy, beta_x, beta_y, Jaco_inv);
         }
     }
 
     return;
 }
 
-void caocJacobian(int k, int dir) {
+void caocJacobian(int k, int dir, double* Jaco_inv) {
     if (dir == II_DIR) {
-        Jaco_inv = ((J_inv[k] + J_inv[k + 1]) / 2);
+        *Jaco_inv = ((J_inv[k] + J_inv[k + 1]) / 2);
     }
     else {
-        Jaco_inv = ((J_inv[k] + J_inv[k + II_STEP]) / 2);
+        *Jaco_inv = ((J_inv[k] + J_inv[k + II_STEP]) / 2);
     }
 }
 
-void calcMetric(int k, int dir) {
+void calcMetric(int k, int dir, double* xi_x, double* xi_y, double* eta_x, double* eta_y, double Jaco_inv ) {
     //ŽÀÛ‚É‹‚ß‚½‚¢‹«ŠE‚Ì”Ô†‚ÆCŽg‚¤”Ô†‚ªŒvŽZ•ûŒü‚Éˆê‚Â‚¸‚ê‚é‚±‚Æ‚É’ˆÓ
     if (dir == II_DIR) {
-        xi_x = Y_eta_half[k + 1] / Jaco_inv;
-        xi_y = -X_eta_half[k + 1] / Jaco_inv;
-        eta_x = -(Y_xi_half[k + 1] + Y_xi_half[k + 2] + Y_xi_half[k - II_STEP + 1] + Y_xi_half[k - II_STEP + 2]) / Jaco_inv;
-        eta_y = (X_xi_half[k + 1] + X_xi_half[k + 2] + X_xi_half[k - II_STEP + 1] + X_xi_half[k - II_STEP + 2]) / Jaco_inv;
+        *xi_x = Y_eta_half[k + 1] / Jaco_inv;
+        *xi_y = -X_eta_half[k + 1] / Jaco_inv;
+        *eta_x = -(Y_xi_half[k + 1] + Y_xi_half[k + 2] + Y_xi_half[k - II_STEP + 1] + Y_xi_half[k - II_STEP + 2]) / Jaco_inv;
+        *eta_y = (X_xi_half[k + 1] + X_xi_half[k + 2] + X_xi_half[k - II_STEP + 1] + X_xi_half[k - II_STEP + 2]) / Jaco_inv;
     }
     else {
-        xi_x = (Y_eta_half[k + II_STEP] + Y_eta_half[k + II_STEP - 1] + Y_eta_half[k + II_STEP * 2] + Y_eta_half[k + II_STEP * 2 - 1]) / Jaco_inv;
-        xi_y = -(X_eta_half[k + II_STEP] + X_eta_half[k + II_STEP - 1] + X_eta_half[k + II_STEP * 2] + X_eta_half[k + II_STEP * 2 - 1]) / Jaco_inv;
-        eta_x = -Y_xi_half[k + II_STEP] / Jaco_inv;
-        eta_y = X_xi_half[k + II_STEP] / Jaco_inv;
+        *xi_x = (Y_eta_half[k + II_STEP] + Y_eta_half[k + II_STEP - 1] + Y_eta_half[k + II_STEP * 2] + Y_eta_half[k + II_STEP * 2 - 1]) / Jaco_inv;
+        *xi_y = -(X_eta_half[k + II_STEP] + X_eta_half[k + II_STEP - 1] + X_eta_half[k + II_STEP * 2] + X_eta_half[k + II_STEP * 2 - 1]) / Jaco_inv;
+        *eta_x = -Y_xi_half[k + II_STEP] / Jaco_inv;
+        *eta_y = X_xi_half[k + II_STEP] / Jaco_inv;
     }
     return;
 }
 
-void calcVelocityGra(int k, int dir) {
+void calcVelocityGra(int k, int dir, double* ux_dx, double* ux_dy, double* vy_dx, double* vy_dy, double xi_x, double xi_y, double eta_x, double eta_y) {
     double ux_xi, ux_eta, vy_xi, vy_eta;
     double k1, k2, k3, k4;
     if (dir == II_DIR) {
@@ -112,27 +129,27 @@ void calcVelocityGra(int k, int dir) {
         vy_eta = vy[k + II_STEP] - vy[k];
     }
 
-    ux_dx = xi_x * ux_xi + eta_x * ux_eta;
-    ux_dy = xi_y * ux_xi + eta_y * ux_eta;
-    vy_dy = xi_y * vy_xi + eta_y * vy_eta;
-    vy_dx = xi_x * vy_xi + eta_x * vy_eta;
+    *ux_dx = xi_x * ux_xi + eta_x * ux_eta;
+    *ux_dy = xi_y * ux_xi + eta_y * ux_eta;
+    *vy_dy = xi_y * vy_xi + eta_y * vy_eta;
+    *vy_dx = xi_x * vy_xi + eta_x * vy_eta;
 
     return;
 }
 
-void calcVeloBoundary(int k, int dir) {
+void calcVeloBoundary(int k, int dir, double* ux_half, double* vy_half) {
     if (dir == II_DIR) {
-        ux_half = (ux[k] + ux[k + 1]) / 2;
-        vy_half = (vy[k] + vy[k + 1]) / 2;
+        *ux_half = (ux[k] + ux[k + 1]) / 2;
+        *vy_half = (vy[k] + vy[k + 1]) / 2;
     }
     else {
-        ux_half = (ux[k] + ux[k + II_STEP]) / 2;
-        vy_half = (vy[k] + vy[k + II_STEP]) / 2;
+        *ux_half = (ux[k] + ux[k + II_STEP]) / 2;
+        *vy_half = (vy[k] + vy[k + II_STEP]) / 2;
     }
     return;
 }
 
-void calcViscoseFactor(int k, int dir) {
+void calcViscoseFactor(int k, int dir, double xi_x, double xi_y, double eta_x, double eta_y, double tau_xx, double tau_xy, double tau_yy, double beta_x, double beta_y, double Jaco_inv) {
     if (dir == II_DIR) {
         Ev[k + II_STEP * JJ_STEP * 0] = 0;
         Ev[k + II_STEP * JJ_STEP * 1] = (xi_x * tau_xx + xi_y * tau_xy) * Jaco_inv;
@@ -148,7 +165,7 @@ void calcViscoseFactor(int k, int dir) {
     return;
 }
 
-void calcCoef(int k, int dir) {
+void calcCoef(int k, int dir, double* mu_ave, double* kappa_ave) {
     double T_a, T_b;
     double mu_1, mu_2;
     double kappa_1, kappa_2;
@@ -165,8 +182,8 @@ void calcCoef(int k, int dir) {
 
     mu_1 = MU_0 * pow(T_a / T_0, 1.5) * (T_0 + C) / (T_a + C);
     mu_2 = MU_0 * pow(T_b / T_0, 1.5) * (T_0 + C) / (T_b + C);
-    mu_ave = 0.5 * (mu_1 + mu_2);
-    kappa_ave = cp * mu_ave / PR;
+    *mu_ave = 0.5 * (mu_1 + mu_2);
+    *kappa_ave = cp * *mu_ave / PR;
 
     return;
 }
@@ -189,7 +206,7 @@ double calcTemp(int k){
     return;*/
 }
 
-void calcTGra(int k, int dir) {/////////
+void calcTGra(int k, int dir, double* T_dx, double* T_dy, double xi_x, double xi_y, double eta_x, double eta_y) {
     double T_xi, T_eta;
     double T_1_a, T_1_b;
     double T_2_a, T_2_b, T_2_c, T_2_d;
@@ -214,8 +231,8 @@ void calcTGra(int k, int dir) {/////////
         T_eta = calcTemp(k + II_STEP) - calcTemp(k);
     }
 
-    T_dx = xi_x * T_xi + eta_x * T_eta;
-    T_dy = xi_y * T_xi + eta_y * T_eta;
+    *T_dx = xi_x * T_xi + eta_x * T_eta;
+    *T_dy = xi_y * T_xi + eta_y * T_eta;
 
     return;
 }

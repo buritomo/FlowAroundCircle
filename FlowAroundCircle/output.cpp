@@ -31,7 +31,7 @@ void exportf(void) {
         fclose(fp);
     }
 
-    //return;
+    return;
 }
 
 void ErrorExport(void) {

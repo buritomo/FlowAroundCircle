@@ -58,7 +58,7 @@ void cordinateDefine(void) {
 			//printf("%d, %lf\n", kj, theta);
 		}
 		r = r + dr;
-		dr = dr * 1.08;
+		dr = dr * 1.095;
 	}
 	return;
 }

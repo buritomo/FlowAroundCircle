@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #define MAIN_C_
+#define PARA
 
 #include "global.h"
 #include "grid.h"
