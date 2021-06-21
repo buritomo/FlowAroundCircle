@@ -33,6 +33,7 @@ void viscose(int dir) {
             calcVeloBoundary(k, dir);
             //calcTemp(k, dir);
             calcCoef(k, dir);
+            calcTGra(k, dir);
 
             tau_xx = 2 / 3 * mu_ave * (2 * ux_dx - vy_dy);
             tau_xy = mu_ave * (ux_dy + vy_dx);
