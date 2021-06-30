@@ -24,7 +24,7 @@ int main(void) {
 	boundaryValue();
 	calcInternalValues();
 	exportf();
-	setExportBoundary();
+	//setExportBoundary();
 	system("pause");
 	setAssumedPotential();
 
@@ -42,7 +42,7 @@ int main(void) {
 		ErrorExport();
 		printTimer();
 		time = time + DELTA_T;
-		exportBoundary();
+		//exportBoundary();
 		//exportf();
 	}
 	

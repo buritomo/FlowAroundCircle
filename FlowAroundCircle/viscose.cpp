@@ -78,12 +78,12 @@ void calcMetric(int k, int dir, double* xi_x, double* xi_y, double* eta_x, doubl
     if (dir == II_DIR) {
         *xi_x = Y_eta_half[k + 1] / Jaco_inv;
         *xi_y = -X_eta_half[k + 1] / Jaco_inv;
-        *eta_x = -(Y_xi_half[k + 1] + Y_xi_half[k + 2] + Y_xi_half[k - II_STEP + 1] + Y_xi_half[k - II_STEP + 2]) / Jaco_inv;
-        *eta_y = (X_xi_half[k + 1] + X_xi_half[k + 2] + X_xi_half[k - II_STEP + 1] + X_xi_half[k - II_STEP + 2]) / Jaco_inv;
+        *eta_x = -(Y_xi_half[k + 1] + Y_xi_half[k + 2] + Y_xi_half[k - II_STEP + 1] + Y_xi_half[k - II_STEP + 2]) * 0.25 / Jaco_inv;
+        *eta_y = (X_xi_half[k + 1] + X_xi_half[k + 2] + X_xi_half[k - II_STEP + 1] + X_xi_half[k - II_STEP + 2]) * 0.25 / Jaco_inv;
     }
     else {
-        *xi_x = (Y_eta_half[k + II_STEP] + Y_eta_half[k + II_STEP - 1] + Y_eta_half[k + II_STEP * 2] + Y_eta_half[k + II_STEP * 2 - 1]) / Jaco_inv;
-        *xi_y = -(X_eta_half[k + II_STEP] + X_eta_half[k + II_STEP - 1] + X_eta_half[k + II_STEP * 2] + X_eta_half[k + II_STEP * 2 - 1]) / Jaco_inv;
+        *xi_x = (Y_eta_half[k + II_STEP] + Y_eta_half[k + II_STEP - 1] + Y_eta_half[k + II_STEP * 2] + Y_eta_half[k + II_STEP * 2 - 1]) * 0.25 / Jaco_inv;
+        *xi_y = -(X_eta_half[k + II_STEP] + X_eta_half[k + II_STEP - 1] + X_eta_half[k + II_STEP * 2] + X_eta_half[k + II_STEP * 2 - 1]) * 0.25 / Jaco_inv;
         *eta_x = -Y_xi_half[k + II_STEP] / Jaco_inv;
         *eta_y = X_xi_half[k + II_STEP] / Jaco_inv;
     }
@@ -130,8 +130,8 @@ void calcVelocityGra(int k, int dir, double* ux_dx, double* ux_dy, double* vy_dx
 
     *ux_dx = xi_x * ux_xi + eta_x * ux_eta;
     *ux_dy = xi_y * ux_xi + eta_y * ux_eta;
-    *vy_dy = xi_y * vy_xi + eta_y * vy_eta;
     *vy_dx = xi_x * vy_xi + eta_x * vy_eta;
+    *vy_dy = xi_y * vy_xi + eta_y * vy_eta;
 
     return;
 }
