@@ -39,18 +39,18 @@ void boundaryValue(void) {
 
         ux[ko2] = U_INF;
         vy[ko2] = 0;
-        //p[ko2] = P_INF;
-        //rho[ko2] = RHO_INF;
-        p[ko2] = p[ki1] + (p[ki1] - p[ki2]);
-        rho[ko2] = rho[ki1] + (rho[ki1] - rho[ki2]);
+        p[ko2] = p[ki1];
+        rho[ko2] = rho[ki1];
+        //p[ko2] = p[ki1] + (p[ki1] - p[ki2]);
+        //rho[ko2] = rho[ki1] + (rho[ki1] - rho[ki2]);
         e[ko2] = rho[ko2] * (p[ko2] / (rho[ko2] * (GAMMA - 1)) + 0.5 * (ux[ko2] * ux[ko2] + vy[ko2] * vy[ko2]));
 
         ux[ko1] = U_INF;
         vy[ko1] = 0;
-        //p[ko1] = P_INF;//ŠO‘}‚Ì•û‚ª‚¢‚¢
-        //rho[ko1] = RHO_INF;//
-        p[ko1] = p[ko2] + (p[ko2] - p[ki1]);
-        rho[ko1] = rho[ko2] + (rho[ko2] - rho[ki1]);
+        p[ko1] = p[ki1];//ŠO‘}‚Ì•û‚ª‚¢‚¢
+        rho[ko1] = rho[ki1];//
+        //p[ko1] = p[ko2] + (p[ko2] - p[ki1]);
+        //rho[ko1] = rho[ko2] + (rho[ko2] - rho[ki1]);
         e[ko1] = rho[ko1] * (p[ko1] / (rho[ko1] * (GAMMA - 1)) + 0.5 * (ux[ko1] * ux[ko1] + vy[ko1] * vy[ko1]));
 
 

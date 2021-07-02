@@ -22,9 +22,11 @@ void fds(int dir) {
         ky_min = 1;
         ky_max = JJ_STEP - 2;
     }
+    /*
 #ifdef PARA
 #pragma omp parallel for private(kx, ky)
 #endif
+*/
     for (kx = kx_min; kx < kx_max; kx++) {
         for (ky = ky_min; ky < ky_max; ky++) {
 
@@ -50,7 +52,7 @@ void fds(int dir) {
 			double e_L, e_R;
 			double p_L, p_R;
 			double H_L, H_R;
-			double c_L, c_R;
+			//double c_L, c_R;
 			double rho_ave;
 			double u_ave;
 			double v_ave;
@@ -77,7 +79,7 @@ void fds(int dir) {
             muscl(&p_L, &p_R, p, k, dir);
             muscl(&e_L, &e_R, e, k, dir);
             muscl(&H_L, &H_R, H, k, dir);
-            muscl(&c_L, &c_R, c, k, dir);
+            //muscl(&c_L, &c_R, c, k, dir);
 
             RoeAverage(&rho_ave, rho_L, rho_R, &u_ave, u_L, u_R, &v_ave, v_L, v_R, &H_ave, H_L, H_R, &c_ave);
             if (dir == II_DIR) {
