@@ -7,7 +7,7 @@
 void exportf(void) {
     char filename[100], filedata[100];
     int step_cnt = (time / DELTA_T);
-    int max_step_cnt = (int)(TIME_MAX / DELTA_T / 100000);
+    int max_step_cnt = (int)(TIME_MAX / DELTA_T / 10000);
 
     if (step_cnt % max_step_cnt == 0) {
         FILE* fp;
@@ -31,7 +31,7 @@ void exportf(void) {
         fclose(fp);
     }
 
-    //return;
+    return;
 }
 
 void ErrorExport(void) {

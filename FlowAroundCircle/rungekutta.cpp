@@ -45,7 +45,7 @@ void rungekutta(void) {
                 int l = lx + ly * II_STEP;
                 for (int m = 0; m < 4; m++) {
                     kari[l + II_STEP * JJ_STEP * m] = kari[l + II_STEP * JJ_STEP * m] - lam[k] * DELTA_T * (Ehalf[l + II_STEP * JJ_STEP * m] - Ehalf[l + II_STEP * JJ_STEP * m - 1]);
-                    errorCheck(k, lx, ly, m);
+                    //errorCheck(k, lx, ly, m);
                 }
             }
         }
@@ -57,7 +57,7 @@ void rungekutta(void) {
                 int l = lx + ly * II_STEP;
                 for (int m = 0; m < 4; m++) {
                     kari[l + II_STEP * JJ_STEP * m] = kari[l + II_STEP * JJ_STEP * m] - lam[k] * DELTA_T * (Fhalf[l + II_STEP * JJ_STEP * m] - Fhalf[l + II_STEP * JJ_STEP * m - II_STEP]);
-                    errorCheck(k, lx, ly, m);
+                    //errorCheck(k, lx, ly, m);
                 }
 
             }
@@ -70,7 +70,7 @@ void rungekutta(void) {
                 int l = lx + ly * II_STEP;
                 for (int m = 0; m < 4; m++) {
                     kari[l + II_STEP * JJ_STEP * m] = kari[l + II_STEP * JJ_STEP * m] + lam[k] * DELTA_T * (Ev[l + II_STEP * JJ_STEP * m] - Ev[l + II_STEP * JJ_STEP * m - 1]);
-                    errorCheck(k, lx, ly, m);
+                    //errorCheck(k, lx, ly, m);
                 }
             }
         }
@@ -82,7 +82,7 @@ void rungekutta(void) {
                 int l = lx + ly * II_STEP;
                 for (int m = 0; m < 4; m++) {
                     kari[l + II_STEP * JJ_STEP * m] = kari[l + II_STEP * JJ_STEP * m] + lam[k] * DELTA_T * (Fv[l + II_STEP * JJ_STEP * m] - Fv[l + II_STEP * JJ_STEP * m - II_STEP]);
-                    errorCheck(k, lx, ly, m);
+                    //errorCheck(k, lx, ly, m);
                 }
 
             }
@@ -99,7 +99,7 @@ void rungekutta(void) {
         }
     }
 
-    printErrorMax();
+    //printErrorMax();
 
     return;
 }

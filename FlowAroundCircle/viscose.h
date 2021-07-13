@@ -21,5 +21,6 @@ void calcVeloBoundary(int k, int dir);
 void calcViscoseFactor(int k, int dir);
 double calcTemp(int k);
 void calcCoef(int k, int dir);
+void calcTGra(int k, int dir);
 
 #endif//VISCOSE_H_

@@ -63,12 +63,12 @@ void calcMetric(int k, int dir) {
     if (dir == II_DIR) {
         xi_x = Y_eta_half[k + 1] / Jaco_inv;
         xi_y = -X_eta_half[k + 1] / Jaco_inv;
-        eta_x = -(Y_xi_half[k + 1] + Y_xi_half[k + 2] + Y_xi_half[k - II_STEP + 1] + Y_xi_half[k - II_STEP + 2]) / Jaco_inv;
-        eta_y = (X_xi_half[k + 1] + X_xi_half[k + 2] + X_xi_half[k - II_STEP + 1] + X_xi_half[k - II_STEP + 2]) / Jaco_inv;
+        eta_x = -(Y_xi_half[k + 1] + Y_xi_half[k + 2] + Y_xi_half[k - II_STEP + 1] + Y_xi_half[k - II_STEP + 2]) * 0.25 / Jaco_inv;
+        eta_y = (X_xi_half[k + 1] + X_xi_half[k + 2] + X_xi_half[k - II_STEP + 1] + X_xi_half[k - II_STEP + 2]) * 0.25 / Jaco_inv;
     }
     else {
-        xi_x = (Y_eta_half[k + II_STEP] + Y_eta_half[k + II_STEP - 1] + Y_eta_half[k + II_STEP * 2] + Y_eta_half[k + II_STEP * 2 - 1]) / Jaco_inv;
-        xi_y = -(X_eta_half[k + II_STEP] + X_eta_half[k + II_STEP - 1] + X_eta_half[k + II_STEP * 2] + X_eta_half[k + II_STEP * 2 - 1]) / Jaco_inv;
+        xi_x = (Y_eta_half[k + II_STEP] + Y_eta_half[k + II_STEP - 1] + Y_eta_half[k + II_STEP * 2] + Y_eta_half[k + II_STEP * 2 - 1]) * 0.25 / Jaco_inv;
+        xi_y = -(X_eta_half[k + II_STEP] + X_eta_half[k + II_STEP - 1] + X_eta_half[k + II_STEP * 2] + X_eta_half[k + II_STEP * 2 - 1]) * 0.25 / Jaco_inv;
         eta_x = -Y_xi_half[k + II_STEP] / Jaco_inv;
         eta_y = X_xi_half[k + II_STEP] / Jaco_inv;
     }
