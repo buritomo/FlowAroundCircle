@@ -150,6 +150,7 @@
     <ClCompile Include="output.cpp" />
     <ClCompile Include="rungekutta.cpp" />
     <ClCompile Include="viscose.cpp" />
+    <ClCompile Include="LU-SGS.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="boundary.h" />
@@ -161,6 +162,7 @@
     <ClInclude Include="output.h" />
     <ClInclude Include="rungekutta.h" />
     <ClInclude Include="viscose.h" />
+    <ClInclude Include="LU-SGS.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
