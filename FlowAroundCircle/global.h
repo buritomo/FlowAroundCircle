@@ -49,6 +49,9 @@
 #define J_OUTLET_MIN 77
 #define J_OUTLET_END 101
 
+#define T_NUM 4
+#define LAM 1.0
+
 #ifdef MAIN_C_
 //ï®óùó 
 double* rho;

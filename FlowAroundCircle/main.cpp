@@ -13,12 +13,14 @@
 #include "LU-SGS.h"
 #include "output.h"
 #include "viscose.h"
+#include "LU-SGS.h"
 
 int main(void) {
 	error_flag = 0;
 	memorySet();
 	cordinateDefine();
 	metric();
+	setMatrixs();
 
 	initialValue();
 	boundaryValue();
@@ -26,7 +28,7 @@ int main(void) {
 	exportf();
 	//setExportBoundary();
 	system("pause");
-	setAssumedPotential();
+	//setAssumedPotential();
 
 	while (time <= TIME_MAX) {
 		makePotential();
@@ -34,9 +36,10 @@ int main(void) {
 		fds(JJ_DIR);
 		viscose(II_DIR);
 		viscose(JJ_DIR);
-		rungekutta();
-		inversePotentialToParams();
-		boundaryValue();
+		//rungekutta();
+		//inversePotentialToParams();
+		//boundaryValue();
+		GaussSeidel();
 		calcInternalValues();
 		exportf();
 		ErrorExport();
@@ -47,7 +50,7 @@ int main(void) {
 	}
 	
 	exportf();
-	releaseAssumedPotential();
+	//releaseAssumedPotential();
 	releaseGrid();
 	return 0;
 }
