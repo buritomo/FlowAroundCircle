@@ -31,7 +31,7 @@ void GaussSeidel(void) {
 				for (int m = 0; m < 4; m++) {
 					RHS[m] = -DELTA_T * (Ehalf[k + II_STEP * JJ_STEP * m] - Ehalf[k + II_STEP * JJ_STEP * m - 1]);
 					RHS[m] += -DELTA_T * (Ev[k + II_STEP * JJ_STEP * m] - Ev[k + II_STEP * JJ_STEP * m - 1]);
-					RHS[m] += -DELTA_T * (Fhalf[k + II_STEP * JJ_STEP * m] - Fhalf[k + II_STEP * JJ_STEP * m - II_STEP]);
+					RHS[m] += DELTA_T * (Fhalf[k + II_STEP * JJ_STEP * m] - Fhalf[k + II_STEP * JJ_STEP * m - II_STEP]);
 					RHS[m] += -DELTA_T * (Fv[k + II_STEP * JJ_STEP * m] - Fv[k + II_STEP * JJ_STEP * m - II_STEP]);
 				}
 
@@ -45,6 +45,10 @@ void GaussSeidel(void) {
 					rhs[m] = (tmpQ[k + II_STEP * JJ_STEP * m] - Q[k + II_STEP * JJ_STEP * m]) + 0.5 * (RHS[m] + tmpRHS[k + II_STEP * JJ_STEP * m]);
 				}
 
+				if (ki == 2 && kj == 18) {
+					printf("%lf\n", dQ[k + II_STEP * JJ_STEP * 0]);
+				}
+
 				calcPM(k, -1, dQ, deltaFlux);
 
 				for (int m = 0; m < 4; m++) {
@@ -53,6 +57,13 @@ void GaussSeidel(void) {
 
 				calcLX(k, spe_r0);
 				LDinv = 1.0 / (1.0 + LAM * DELTA_T * (spe_r0[0] + spe_r0[1]));
+
+				if (ki == 2 && kj == 18) {
+					printf(" % lf, % lf\n", LDinv, rhs[1]);
+					printf("%lf. %lf, %lf, %lf\n", deltaFlux[0][0], deltaFlux[0][1], deltaFlux[0][2], deltaFlux[0][3]);
+					printf("%lf. %lf, %lf, %lf\n", deltaFlux[1][0], deltaFlux[1][1], deltaFlux[1][2], deltaFlux[1][3]);
+					printf("\n");
+				}
 
 				for (int m = 0; m < 4; m++) {
 					dQ[k + II_STEP * JJ_STEP * m] = rhs[m] * LDinv;
@@ -75,11 +86,18 @@ void GaussSeidel(void) {
 				calcPM(k, 1, dQ, deltaFlux);
 
 				for (int m = 0; m < 4; m++) {
-					rhs[m] += LAM * DELTA_T * (deltaFlux[II_DIR - 1][m] + deltaFlux[JJ_DIR - 1][m]);
+					rhs[m] = LAM * DELTA_T * (deltaFlux[II_DIR - 1][m] + deltaFlux[JJ_DIR - 1][m]);
 				}
 				
 				calcLX(k, spe_r0);
 				LDinv = 1.0 / (1.0 + LAM * DELTA_T * (spe_r0[0] + spe_r0[1]));
+
+				if (ki == 2 && kj == 9) {
+					printf(" % lf, % lf\n", LDinv, rhs[2]);
+					printf("%lf. %lf, %lf, %lf\n", deltaFlux[0][0], deltaFlux[0][1], deltaFlux[0][2], deltaFlux[0][3]);
+					printf("%lf. %lf, %lf, %lf\n", deltaFlux[1][0], deltaFlux[1][1], deltaFlux[1][2], deltaFlux[1][3]);
+					printf("\n\n");
+				}
 
 				for (int m = 0; m < 4; m++) {
 					rhsF[k + II_STEP * JJ_STEP * m] = dQ[k + II_STEP * JJ_STEP * m] - rhs[m] * LDinv;
@@ -117,19 +135,23 @@ void GaussSeidel(void) {
 				}
 
 				if (isnan(rho[k])) {
-					printf("rho is NaN! at (%d, %d)\n", ki, kj);
+					printf("rho is NaN! at (%d, %d)\n", ki, kj); 
+					system("pause");
 					exit(1);
 				}
 				if (isnan(ux[k])) {
 					printf("ux is NaN! at (%d, %d)\n", ki, kj);
+					system("pause");
 					exit(1);
 				}
 				if (isnan(vy[k])) {
 					printf("vy is NaN! at (%d, %d)\n", ki, kj);
+					system("pause");
 					exit(1);
 				}
 				if (isnan(e[k])) {
 					printf("e is NaN! at (%d, %d)\n", ki, kj);
+					system("pause");
 					exit(1);
 				}
 			}
@@ -156,6 +178,12 @@ void dQ_initial(void) {
 			rhsF[k + II_STEP * JJ_STEP * 1] = 0.0;
 			rhsF[k + II_STEP * JJ_STEP * 2] = 0.0;
 			rhsF[k + II_STEP * JJ_STEP * 3] = 0.0;
+
+			tmpQ[k + II_STEP * JJ_STEP * 0] = Q[k + II_STEP * JJ_STEP * 0];
+			tmpQ[k + II_STEP * JJ_STEP * 1] = Q[k + II_STEP * JJ_STEP * 1];
+			tmpQ[k + II_STEP * JJ_STEP * 2] = Q[k + II_STEP * JJ_STEP * 2];
+			tmpQ[k + II_STEP * JJ_STEP * 3] = Q[k + II_STEP * JJ_STEP * 3];
+
 		}
 	}
 	return;
@@ -183,17 +211,17 @@ void calcPM(int k, int pmflag, double *dQ, double(*flux)[4]) {
 	for (int mflag = 0; mflag < 2; mflag++) {
 		int it = k + pmflag * ddd[mflag];
 
-		SS[xi][x] = 0.5 * (X_eta_half[it] + X_eta_half[it + 1]);
-		SS[xi][y] = 0.5 * (X_xi_half[it] + X_xi_half[it + 1]);
-		SS[eta][x] = 0.5 * (Y_eta_half[it] + Y_eta_half[it + II_STEP]);
-		SS[eta][y] = 0.5 * (Y_xi_half[it] + Y_xi_half[it + II_STEP]);
+		SS[xi][x] = 0.5 * (Y_eta_half[it] + Y_eta_half[it + 1]);
+		SS[xi][y] = -0.5 * (X_eta_half[it] + X_eta_half[it + 1]);
+		SS[eta][x] = -0.5 * (Y_xi_half[it] + Y_xi_half[it + II_STEP]);
+		SS[eta][y] = 0.5 * (X_xi_half[it] + X_xi_half[it + II_STEP]);
 
 
 		if (dQ[it + II_STEP * JJ_STEP * 0] != 0.0) {
-			Jaco = 1 / J_inv[k];
+			Jaco = 1 / J_inv[it];
 
-			kx = SS[mflag][x];
-			ky = SS[mflag][y];
+			kx = SS[mflag][x] * Jaco;
+			ky = SS[mflag][y] * Jaco;
 			Sk = sqrt(kx * kx + ky * ky);
 			
 			invQ = 1.0 / (dQ[it + II_STEP * JJ_STEP * 0] + rho[it] / Jaco);
@@ -207,7 +235,7 @@ void calcPM(int k, int pmflag, double *dQ, double(*flux)[4]) {
 			ZZ0 = kx * ux[it] + ky * vy[it];
 			P = (e[it] - 0.5 * rho[it] * (ux[it] * ux[it] + vy[it] * vy[it])) * (GAMMA - 1);
 			c = sqrt(GAMMA * P / rho[it]);
-			tmp = P / rho[it] * RAIR;
+			tmp = P / rho[it] / RAIR;
 			Mu = MU_0 * pow((tmp / (273.15 + 20.0)), 1.5) * (273.15 + 20.0 + C) / (tmp + C);
 
 			spe = alpha * (fabs(ZZ0) + c * Sk) + 2.0 * (Mu) * Sk * Sk / rho[it];
@@ -244,17 +272,22 @@ void calcLX(int k, double(*spe)) {
 
 	Jaco = 1 / J_inv[k];
 
-	SS[xi][x] = 0.5 * (X_eta_half[k] + X_eta_half[k + 1]);
-	SS[xi][y] = 0.5 * (X_xi_half[k] + X_xi_half[k + 1]);
-	SS[eta][x] = 0.5 * (Y_eta_half[k] + Y_eta_half[k + II_STEP]);
-	SS[eta][y] = 0.5 * (Y_xi_half[k] + Y_xi_half[k + II_STEP]);
+	SS[xi][x] = 0.5 * (Y_eta_half[k] + Y_eta_half[k + 1]);
+	SS[xi][y] = -0.5 * (X_eta_half[k] + X_eta_half[k + 1]);
+	SS[eta][x] = -0.5 * (Y_xi_half[k] + Y_xi_half[k + II_STEP]);
+	SS[eta][y] = 0.5 * (X_xi_half[k] + X_xi_half[k + II_STEP]);
 
 	for (int mflag = 0; mflag < 2; mflag++) {
-		kx = SS[mflag][x];
-		ky = SS[mflag][y];
+		kx = SS[mflag][x] * Jaco;
+		ky = SS[mflag][y] * Jaco;
+
+		ZZ = kx * ux[k] + ky * vy[k];
+		Sk = sqrt(kx * kx + ky * ky);
+
+
 		pre = (e[k] - 0.5 * rho[k] * (ux[k] * ux[k] + vy[k] * vy[k])) * (GAMMA - 1);
 		c = sqrt(GAMMA + pre / rho[k]);
-		tmp = pre / rho[k] * RAIR;
+		tmp = pre / rho[k] / RAIR;
 		Mu = MU_0 * (pow((tmp) / (273.15 + 20.0), 1.5) * (273.15 + 20.0 + C) / (tmp + C));
 		spe[mflag] = alpha * (fabs(ZZ) + c * Sk) + 2.0 * (Mu) * Sk * Sk / rho[k];
 	}
@@ -263,11 +296,6 @@ void calcLX(int k, double(*spe)) {
 }
 
 void setMatrixs(void) {
-	double* tmpQ;
-	double* tmpRHS;
-	double* dQ;
-	double* rhsF;
-
 	tmpQ = (double*)malloc(sizeof(double) * II_STEP * JJ_STEP * 4);
 	tmpRHS = (double*)malloc(sizeof(double) * II_STEP * JJ_STEP * 4);
 	dQ = (double*)malloc(sizeof(double) * II_STEP * JJ_STEP * 4);

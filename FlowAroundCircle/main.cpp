@@ -13,7 +13,6 @@
 #include "LU-SGS.h"
 #include "output.h"
 #include "viscose.h"
-#include "LU-SGS.h"
 
 int main(void) {
 	error_flag = 0;
