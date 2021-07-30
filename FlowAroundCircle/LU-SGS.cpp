@@ -12,8 +12,10 @@ void GaussSeidel(void) {
 	double error_max = 0.0;
 
 	dQ_initial();
+	printf("nya-nn\n");
 
 	for (itr = 0; itr < T_NUM; itr++) {
+		printf("itr : %d\n", itr);
 		fds(II_DIR);
 		fds(JJ_DIR);
 		viscose(II_DIR);
@@ -46,7 +48,7 @@ void GaussSeidel(void) {
 				}
 
 				if (ki == 2 && kj == 18) {
-					printf("%lf\n", dQ[k + II_STEP * JJ_STEP * 0]);
+					//printf("%lf\n", dQ[k + II_STEP * JJ_STEP * 0]);
 				}
 
 				calcPM(k, -1, dQ, deltaFlux);
@@ -58,10 +60,10 @@ void GaussSeidel(void) {
 				calcLX(k, spe_r0);
 				LDinv = 1.0 / (1.0 + LAM * DELTA_T * (spe_r0[0] + spe_r0[1]));
 
-				if (ki == 2 && kj == 18) {
-					printf(" % lf, % lf\n", LDinv, rhs[1]);
-					printf("%lf. %lf, %lf, %lf\n", deltaFlux[0][0], deltaFlux[0][1], deltaFlux[0][2], deltaFlux[0][3]);
-					printf("%lf. %lf, %lf, %lf\n", deltaFlux[1][0], deltaFlux[1][1], deltaFlux[1][2], deltaFlux[1][3]);
+				if (ki == 2 && kj == 9) {
+					printf("LDinv :  % lf\n", LDinv);
+					printf("rhs : %lf. %lf, %lf, %lf\n", rhs[0], rhs[1], rhs[2], rhs[3]);
+					//printf("%lf. %lf, %lf, %lf\n", deltaFlux[1][0], deltaFlux[1][1], deltaFlux[1][2], deltaFlux[1][3]);
 					printf("\n");
 				}
 
@@ -93,9 +95,9 @@ void GaussSeidel(void) {
 				LDinv = 1.0 / (1.0 + LAM * DELTA_T * (spe_r0[0] + spe_r0[1]));
 
 				if (ki == 2 && kj == 9) {
-					printf(" % lf, % lf\n", LDinv, rhs[2]);
-					printf("%lf. %lf, %lf, %lf\n", deltaFlux[0][0], deltaFlux[0][1], deltaFlux[0][2], deltaFlux[0][3]);
-					printf("%lf. %lf, %lf, %lf\n", deltaFlux[1][0], deltaFlux[1][1], deltaFlux[1][2], deltaFlux[1][3]);
+					//printf(" % lf, % lf\n", LDinv, rhs[2]);
+					//printf("%lf. %lf, %lf, %lf\n", deltaFlux[0][0], deltaFlux[0][1], deltaFlux[0][2], deltaFlux[0][3]);
+					//printf("%lf. %lf, %lf, %lf\n", deltaFlux[1][0], deltaFlux[1][1], deltaFlux[1][2], deltaFlux[1][3]);
 					printf("\n\n");
 				}
 
@@ -158,7 +160,7 @@ void GaussSeidel(void) {
 		}
 	}
 
-	printf("Time: %.8f\, error_max %lf", time, error_max);
+	printf("Time: %.8f\, error_max %lf\n", time, error_max);
 
 
 	return;
@@ -226,9 +228,9 @@ void calcPM(int k, int pmflag, double *dQ, double(*flux)[4]) {
 			
 			invQ = 1.0 / (dQ[it + II_STEP * JJ_STEP * 0] + rho[it] / Jaco);
 			tmprho = dQ[it + II_STEP * JJ_STEP * 0] * Jaco + rho[it];
-			tmpux = (dQ[it + II_STEP * JJ_STEP * 2] + ux[it] / Jaco * rho[it]) * invQ;
-			tmpvy = (dQ[it + II_STEP * JJ_STEP * 3] + vy[it] / Jaco * rho[it]) * invQ;
-			tmpe = (dQ[it + II_STEP * JJ_STEP * 4] * Jaco + e[it]);
+			tmpux = (dQ[it + II_STEP * JJ_STEP * 1] + ux[it] / Jaco * rho[it]) * invQ;
+			tmpvy = (dQ[it + II_STEP * JJ_STEP * 2] + vy[it] / Jaco * rho[it]) * invQ;
+			tmpe = (dQ[it + II_STEP * JJ_STEP * 3] * Jaco + e[it]);
 			tmpp = (GAMMA - 1.0) * (tmpe - 0.5 * tmprho * (tmpux * tmpux + tmpvy * tmpvy));
 		
 			ZZ = kx * tmpux + ky * tmpvy;
@@ -240,17 +242,28 @@ void calcPM(int k, int pmflag, double *dQ, double(*flux)[4]) {
 
 			spe = alpha * (fabs(ZZ0) + c * Sk) + 2.0 * (Mu) * Sk * Sk / rho[it];
 		
-			flux[mflag][0] = 0.5 * ((tmprho * ZZ - rho[it] * ZZ0) / Jaco - pmflag * spe * dQ[it]);
-			flux[mflag][1] = 0.5 * (((tmprho * tmpux * ZZ + kx * tmpp) - (rho[it] * ux[it] * ZZ0 + kx * p[it])) / Jaco - pmflag * spe * dQ[it]);
-			flux[mflag][2] = 0.5 * (((tmprho * tmpvy * ZZ + ky * tmpp) - (rho[it] * vy[it] * ZZ0 + ky * p[it])) / Jaco - pmflag * spe * dQ[it]);
-			flux[mflag][3] = 0.5 * (((tmpe + tmpp) * ZZ - (e[it] + p[it]) * ZZ0) / Jaco - pmflag * spe * dQ[it]);
+			flux[mflag][0] = 0.5 * ((tmprho * ZZ - rho[it] * ZZ0) / Jaco - pmflag * spe * dQ[it + II_STEP * JJ_STEP * 0]);
+			flux[mflag][1] = 0.5 * (((tmprho * tmpux * ZZ + kx * tmpp) - (rho[it] * ux[it] * ZZ0 + kx * p[it])) / Jaco - pmflag * spe * dQ[it + II_STEP * JJ_STEP * 1]);
+			flux[mflag][2] = 0.5 * (((tmprho * tmpvy * ZZ + ky * tmpp) - (rho[it] * vy[it] * ZZ0 + ky * p[it])) / Jaco - pmflag * spe * dQ[it + II_STEP * JJ_STEP * 2]);
+			flux[mflag][3] = 0.5 * (((tmpe + tmpp) * ZZ - (e[it] + p[it]) * ZZ0) / Jaco - pmflag * spe * dQ[it + II_STEP * JJ_STEP * 3]);
 		
+			if (k == 947) {
+				printf("Q : %lf, %lf, %lf, %lf\n", Q[it + II_STEP * JJ_STEP * 0], Q[it + II_STEP * JJ_STEP * 1], Q[it + II_STEP * JJ_STEP * 2], e[it]);
+				printf("dQ : %lf, %lf, %lf, %lf\n", dQ[it + II_STEP * JJ_STEP * 0], dQ[it + II_STEP * JJ_STEP * 1], dQ[it + II_STEP * JJ_STEP * 2], dQ[it + II_STEP * JJ_STEP * 3]);
+				printf("delta flux %d : %lf, %lf, %lf, %lf\n", mflag, flux[mflag][0], flux[mflag][1], flux[mflag][2], flux[mflag][3]);
+			}
 		}
 		else {
 			flux[mflag][0] = 0.0;
 			flux[mflag][1] = 0.0;
 			flux[mflag][2] = 0.0;
 			flux[mflag][3] = 0.0;
+
+			if (k == 947) {
+				printf("Q : %lf, %lf, %lf, %lf\n", Q[it + II_STEP * JJ_STEP * 0], Q[it + II_STEP * JJ_STEP * 1], Q[it + II_STEP * JJ_STEP * 2], Q[it + II_STEP * JJ_STEP * 3]);
+				printf("dQ : %lf, %lf, %lf, %lf\n", dQ[it + II_STEP * JJ_STEP * 0], dQ[it + II_STEP * JJ_STEP * 1], dQ[it + II_STEP * JJ_STEP * 2], dQ[it + II_STEP * JJ_STEP * 3]);
+				printf("delta flux %d : %lf, %lf, %lf, %lf\n", mflag, flux[mflag][0], flux[mflag][1], flux[mflag][2], flux[mflag][3]);
+			}
 		}
 	}
 
@@ -286,7 +299,7 @@ void calcLX(int k, double(*spe)) {
 
 
 		pre = (e[k] - 0.5 * rho[k] * (ux[k] * ux[k] + vy[k] * vy[k])) * (GAMMA - 1);
-		c = sqrt(GAMMA + pre / rho[k]);
+		c = sqrt(GAMMA * pre / rho[k]);
 		tmp = pre / rho[k] / RAIR;
 		Mu = MU_0 * (pow((tmp) / (273.15 + 20.0), 1.5) * (273.15 + 20.0 + C) / (tmp + C));
 		spe[mflag] = alpha * (fabs(ZZ) + c * Sk) + 2.0 * (Mu) * Sk * Sk / rho[k];

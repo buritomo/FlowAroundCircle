@@ -26,7 +26,7 @@
 /*	Cellのうち両側2点は仮想格子							*/
 /*	計算点はゆえにSTEP個(II_STEP-5)						*/
 //#define DELTA_T 1e-8
-#define DELTA_T 2e-6
+#define DELTA_T 1e-6
 #define STEP 100
 #define II_STEP (STEP + 5)
 #define JJ_STEP (STEP + 5)
