@@ -44,6 +44,7 @@ void GaussSeidel(void) {
 				if (itr == 0) {
 					for (int m = 0; m < 4; m++) {
 						tmpRHS[k + II_STEP * JJ_STEP * m] = RHS[m];
+						//tmpQ[k + II_DIR * JJ_STEP * m] = Q[k + II_DIR * JJ_STEP * m];
 					}
 				}
 
@@ -76,7 +77,7 @@ void GaussSeidel(void) {
 #ifdef PARA
 #pragma omp parallel for private(ki, kj)
 #endif
-		for (int ki = 2; ki < II_STEP - 3; ki++) {
+		for (int ki = 2; ki < II_STEP - 3; ki++) { 
 			for (int kj = 2; kj < JJ_STEP - 3; kj++) {
 				int k = ki + kj * II_STEP;
 				double deltaFlux[2][4];
@@ -191,12 +192,12 @@ void dQ_initial(void) {
 			rhsF[k + II_STEP * JJ_STEP * 1] = 0.0;
 			rhsF[k + II_STEP * JJ_STEP * 2] = 0.0;
 			rhsF[k + II_STEP * JJ_STEP * 3] = 0.0;
-
+						
 			tmpQ[k + II_STEP * JJ_STEP * 0] = Q[k + II_STEP * JJ_STEP * 0];
 			tmpQ[k + II_STEP * JJ_STEP * 1] = Q[k + II_STEP * JJ_STEP * 1];
 			tmpQ[k + II_STEP * JJ_STEP * 2] = Q[k + II_STEP * JJ_STEP * 2];
 			tmpQ[k + II_STEP * JJ_STEP * 3] = Q[k + II_STEP * JJ_STEP * 3];
-
+				
 		}
 	}
 	return;
@@ -207,7 +208,7 @@ void calcPM(int k, int pmflag, double *dQ, double(*flux)[4]) {
 	int ddd[2];
 	int xi = 0, eta = 1;
 	int x = 0, y = 1;
-	double alpha = 1.01;
+	double alpha = LAM;
 	double Jaco;
 	double kx, ky;
 	double Sk;
@@ -250,7 +251,8 @@ void calcPM(int k, int pmflag, double *dQ, double(*flux)[4]) {
 			tmp = P / rho[it] / RAIR;
 			Mu = MU_0 * pow((tmp / T_0), 1.5) * (T_0 + C) / (tmp + C);
 			
-			spe = alpha * (fabs(ZZ0) + c * Sk) + 2.0 * (Mu) * Sk * Sk / rho[it];
+			//spe = alpha * (fabs(ZZ0) + c * Sk) + 2.0 * (Mu) * Sk * Sk / rho[it];
+			spe = alpha * (fabs(ZZ0) + c * Sk);
 		
 			flux[mflag][0] = 0.5 * ((tmprho * ZZ - rho[it] * ZZ0) / Jaco - pmflag * spe * dQ[it + II_STEP * JJ_STEP * 0]);
 			flux[mflag][1] = 0.5 * (((tmprho * tmpux * ZZ + kx * tmpp) - (rho[it] * ux[it] * ZZ0 + kx * p[it])) / Jaco - pmflag * spe * dQ[it + II_STEP * JJ_STEP * 1]);
@@ -294,7 +296,7 @@ void calcLX(int k, double(*spe)) {
 	double c;
 	double tmp, pre;
 	double Mu;
-	double alpha = 1.01;
+	double alpha = LAM;
 
 	Jaco = 1 / J_inv[k];
 
@@ -315,7 +317,8 @@ void calcLX(int k, double(*spe)) {
 		c = sqrt(GAMMA * pre / rho[k]);
 		tmp = pre / rho[k] / RAIR;
 		Mu = MU_0 * pow((tmp / T_0), 1.5) * (T_0 + C) / (tmp + C);
-		spe[mflag] = alpha * (fabs(ZZ) + c * Sk) + 2.0 * (Mu) * Sk * Sk / rho[k];
+		//spe[mflag] = alpha * (fabs(ZZ) + c * Sk) + 2.0 * (Mu) * Sk * Sk / rho[k];
+		spe[mflag] = alpha * (fabs(ZZ) + c * Sk);
 	}
 
 	return;
