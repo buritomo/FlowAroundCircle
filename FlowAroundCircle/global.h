@@ -52,6 +52,8 @@
 #define T_NUM 4
 #define LAM 1.0
 
+#define PARA
+
 #ifdef MAIN_C_
 //•¨——Ê
 double* rho;

@@ -42,7 +42,7 @@ int main(void) {
 		calcInternalValues();
 		exportf();
 		ErrorExport();
-		printTimer();
+		//printTimer();
 		time = time + DELTA_T;
 		//exportBoundary();
 		//exportf();

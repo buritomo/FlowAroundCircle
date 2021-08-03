@@ -11,7 +11,7 @@ void exportf(void) {
 
     if (step_cnt % max_step_cnt == 0) {
         FILE* fp;
-        sprintf(filename, "Time%.6fsec.dat", time);
+        sprintf(filename, "../Output/Time%.6fsec.dat", time);
         sprintf(filedata, "Time%.6fsec.data", time);
 
         fp = fopen(filename, "w");
@@ -41,7 +41,7 @@ void ErrorExport(void) {
 
     if (error_flag == 1) {
         FILE* fp;
-        sprintf(filename, "Time%.6fsec.dat", time);
+        sprintf(filename, "../Output/Time%.6fsec.dat", time);
         sprintf(filedata, "Time%.6fsec.data", time);
 
         fp = fopen(filename, "w");

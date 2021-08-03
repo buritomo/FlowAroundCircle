@@ -12,14 +12,18 @@ void GaussSeidel(void) {
 	double error_max = 0.0;
 
 	dQ_initial();
-	printf("nya-nn\n");
+	//printf("nya-nn\n");
 
 	for (itr = 0; itr < T_NUM; itr++) {
-		printf("itr : %d\n", itr);
+		//printf("itr : %d\n", itr);
 		fds(II_DIR);
 		fds(JJ_DIR);
 		viscose(II_DIR);
 		viscose(JJ_DIR);
+
+#ifdef PARA
+#pragma omp parallel for private(ki, kj)
+#endif
 
 		for (int ki = 2; ki < II_STEP - 3; ki++) {
 			for (int kj = 2; kj < JJ_STEP - 3; kj++) {
@@ -32,9 +36,9 @@ void GaussSeidel(void) {
 
 				for (int m = 0; m < 4; m++) {
 					RHS[m] = -DELTA_T * (Ehalf[k + II_STEP * JJ_STEP * m] - Ehalf[k + II_STEP * JJ_STEP * m - 1]);
-					RHS[m] += -DELTA_T * (Ev[k + II_STEP * JJ_STEP * m] - Ev[k + II_STEP * JJ_STEP * m - 1]);
-					RHS[m] += DELTA_T * (Fhalf[k + II_STEP * JJ_STEP * m] - Fhalf[k + II_STEP * JJ_STEP * m - II_STEP]);
-					RHS[m] += -DELTA_T * (Fv[k + II_STEP * JJ_STEP * m] - Fv[k + II_STEP * JJ_STEP * m - II_STEP]);
+					RHS[m] -= -DELTA_T * (Ev[k + II_STEP * JJ_STEP * m] - Ev[k + II_STEP * JJ_STEP * m - 1]);
+					RHS[m] -= DELTA_T * (Fhalf[k + II_STEP * JJ_STEP * m] - Fhalf[k + II_STEP * JJ_STEP * m - II_STEP]);
+					RHS[m] -= -DELTA_T * (Fv[k + II_STEP * JJ_STEP * m] - Fv[k + II_STEP * JJ_STEP * m - II_STEP]);
 				}
 
 				if (itr == 0) {
@@ -46,11 +50,7 @@ void GaussSeidel(void) {
 				for (int m = 0; m < 4; m++) {
 					rhs[m] = (tmpQ[k + II_STEP * JJ_STEP * m] - Q[k + II_STEP * JJ_STEP * m]) + 0.5 * (RHS[m] + tmpRHS[k + II_STEP * JJ_STEP * m]);
 				}
-
-				if (ki == 2 && kj == 18) {
-					//printf("%lf\n", dQ[k + II_STEP * JJ_STEP * 0]);
-				}
-
+				
 				calcPM(k, -1, dQ, deltaFlux);
 
 				for (int m = 0; m < 4; m++) {
@@ -59,20 +59,23 @@ void GaussSeidel(void) {
 
 				calcLX(k, spe_r0);
 				LDinv = 1.0 / (1.0 + LAM * DELTA_T * (spe_r0[0] + spe_r0[1]));
-
-				if (ki == 2 && kj == 9) {
+				/*
+				if (ki == 2 && kj == 27) {
 					printf("LDinv :  % lf\n", LDinv);
 					printf("rhs : %lf. %lf, %lf, %lf\n", rhs[0], rhs[1], rhs[2], rhs[3]);
-					//printf("%lf. %lf, %lf, %lf\n", deltaFlux[1][0], deltaFlux[1][1], deltaFlux[1][2], deltaFlux[1][3]);
 					printf("\n");
 				}
-
+				*/
 				for (int m = 0; m < 4; m++) {
 					dQ[k + II_STEP * JJ_STEP * m] = rhs[m] * LDinv;
 				}
 			}
 		}
 
+
+#ifdef PARA
+#pragma omp parallel for private(ki, kj)
+#endif
 		for (int ki = 2; ki < II_STEP - 3; ki++) {
 			for (int kj = 2; kj < JJ_STEP - 3; kj++) {
 				int k = ki + kj * II_STEP;
@@ -93,20 +96,23 @@ void GaussSeidel(void) {
 				
 				calcLX(k, spe_r0);
 				LDinv = 1.0 / (1.0 + LAM * DELTA_T * (spe_r0[0] + spe_r0[1]));
-
-				if (ki == 2 && kj == 9) {
-					//printf(" % lf, % lf\n", LDinv, rhs[2]);
-					//printf("%lf. %lf, %lf, %lf\n", deltaFlux[0][0], deltaFlux[0][1], deltaFlux[0][2], deltaFlux[0][3]);
-					//printf("%lf. %lf, %lf, %lf\n", deltaFlux[1][0], deltaFlux[1][1], deltaFlux[1][2], deltaFlux[1][3]);
+				/*
+				if (ki == 2 && kj == 27) {
+					printf("LDinv :  % lf\n", LDinv);
+					printf("rhs : %lf. %lf, %lf, %lf\n", rhs[0], rhs[1], rhs[2], rhs[3]);
 					printf("\n\n");
 				}
-
+				*/
 				for (int m = 0; m < 4; m++) {
 					rhsF[k + II_STEP * JJ_STEP * m] = dQ[k + II_STEP * JJ_STEP * m] - rhs[m] * LDinv;
 				}
 			}
 		}
 
+
+#ifdef PARA
+#pragma omp parallel for private(ki, kj)
+#endif
 		for (int ki = 2; ki < II_STEP - 3; ki++) {
 			for (int kj = 2; kj < JJ_STEP - 3; kj++) {
 				int k = ki + kj * II_STEP;
@@ -126,7 +132,7 @@ void GaussSeidel(void) {
 				rho[k] = Q[k + II_STEP * JJ_STEP * 0] * Jaco;
 				ux[k] = Q[k + II_STEP * JJ_STEP * 1] * invQ;
 				vy[k] = Q[k + II_STEP * JJ_STEP * 2] * invQ;
-				e[k] = Q[k + II_STEP * JJ_STEP * 3] * invQ;
+				e[k] = Q[k + II_STEP * JJ_STEP * 3] * Jaco;
 				p[k] = (e[k] - 0.5 * rho[k] * (ux[k] * ux[k] + vy[k] * vy[k])) * (GAMMA - 1);
 
 				boundaryValue();
@@ -137,22 +143,27 @@ void GaussSeidel(void) {
 				}
 
 				if (isnan(rho[k])) {
-					printf("rho is NaN! at (%d, %d)\n", ki, kj); 
+					printf("rho is NaN! at (%d, %d), Time %lf\n", ki, kj, time); 
+					printf("Q : %lf, %lf, %lf, %lf\n", Q[k + II_STEP * JJ_STEP * 0], Q[k + II_STEP * JJ_STEP * 1], Q[k + II_STEP * JJ_STEP * 2], Q[k + II_STEP * JJ_STEP * 3]);
+					printf("dQ : %lf, %lf, %lf, %lf\n", dQ[k + II_STEP * JJ_STEP * 0], dQ[k + II_STEP * JJ_STEP * 1], dQ[k + II_STEP * JJ_STEP * 2], dQ[k + II_STEP * JJ_STEP * 3]);
 					system("pause");
 					exit(1);
 				}
 				if (isnan(ux[k])) {
-					printf("ux is NaN! at (%d, %d)\n", ki, kj);
+					printf("ux is NaN! at (%d, %d), Time %lf\n", ki, kj, time);
+					printf("Q : %lf, %lf, %lf, %lf\n", Q[k + II_STEP * JJ_STEP * 0], Q[k + II_STEP * JJ_STEP * 1], Q[k + II_STEP * JJ_STEP * 2], Q[k + II_STEP * JJ_STEP * 3]);
 					system("pause");
 					exit(1);
 				}
 				if (isnan(vy[k])) {
-					printf("vy is NaN! at (%d, %d)\n", ki, kj);
+					printf("vy is NaN! at (%d, %d), Time %lf\n", ki, kj, time);
+					printf("Q : %lf, %lf, %lf, %lf\n", Q[k + II_STEP * JJ_STEP * 0], Q[k + II_STEP * JJ_STEP * 1], Q[k + II_STEP * JJ_STEP * 2], Q[k + II_STEP * JJ_STEP * 3]);
 					system("pause");
 					exit(1);
 				}
 				if (isnan(e[k])) {
-					printf("e is NaN! at (%d, %d)\n", ki, kj);
+					printf("e is NaN! at (%d, %d), Time %lf\n", ki, kj, time);
+					printf("Q : %lf, %lf, %lf, %lf\n", Q[k + II_STEP * JJ_STEP * 0], Q[k + II_STEP * JJ_STEP * 1], Q[k + II_STEP * JJ_STEP * 2], Q[k + II_STEP * JJ_STEP * 3]);
 					system("pause");
 					exit(1);
 				}
@@ -218,7 +229,6 @@ void calcPM(int k, int pmflag, double *dQ, double(*flux)[4]) {
 		SS[eta][x] = -0.5 * (Y_xi_half[it] + Y_xi_half[it + II_STEP]);
 		SS[eta][y] = 0.5 * (X_xi_half[it] + X_xi_half[it + II_STEP]);
 
-
 		if (dQ[it + II_STEP * JJ_STEP * 0] != 0.0) {
 			Jaco = 1 / J_inv[it];
 
@@ -238,32 +248,35 @@ void calcPM(int k, int pmflag, double *dQ, double(*flux)[4]) {
 			P = (e[it] - 0.5 * rho[it] * (ux[it] * ux[it] + vy[it] * vy[it])) * (GAMMA - 1);
 			c = sqrt(GAMMA * P / rho[it]);
 			tmp = P / rho[it] / RAIR;
-			Mu = MU_0 * pow((tmp / (273.15 + 20.0)), 1.5) * (273.15 + 20.0 + C) / (tmp + C);
-
+			Mu = MU_0 * pow((tmp / T_0), 1.5) * (T_0 + C) / (tmp + C);
+			
 			spe = alpha * (fabs(ZZ0) + c * Sk) + 2.0 * (Mu) * Sk * Sk / rho[it];
 		
 			flux[mflag][0] = 0.5 * ((tmprho * ZZ - rho[it] * ZZ0) / Jaco - pmflag * spe * dQ[it + II_STEP * JJ_STEP * 0]);
 			flux[mflag][1] = 0.5 * (((tmprho * tmpux * ZZ + kx * tmpp) - (rho[it] * ux[it] * ZZ0 + kx * p[it])) / Jaco - pmflag * spe * dQ[it + II_STEP * JJ_STEP * 1]);
 			flux[mflag][2] = 0.5 * (((tmprho * tmpvy * ZZ + ky * tmpp) - (rho[it] * vy[it] * ZZ0 + ky * p[it])) / Jaco - pmflag * spe * dQ[it + II_STEP * JJ_STEP * 2]);
 			flux[mflag][3] = 0.5 * (((tmpe + tmpp) * ZZ - (e[it] + p[it]) * ZZ0) / Jaco - pmflag * spe * dQ[it + II_STEP * JJ_STEP * 3]);
-		
-			if (k == 947) {
+			/*
+			if (k == 2837) {
+				printf("it : %d\n", it);
 				printf("Q : %lf, %lf, %lf, %lf\n", Q[it + II_STEP * JJ_STEP * 0], Q[it + II_STEP * JJ_STEP * 1], Q[it + II_STEP * JJ_STEP * 2], e[it]);
 				printf("dQ : %lf, %lf, %lf, %lf\n", dQ[it + II_STEP * JJ_STEP * 0], dQ[it + II_STEP * JJ_STEP * 1], dQ[it + II_STEP * JJ_STEP * 2], dQ[it + II_STEP * JJ_STEP * 3]);
 				printf("delta flux %d : %lf, %lf, %lf, %lf\n", mflag, flux[mflag][0], flux[mflag][1], flux[mflag][2], flux[mflag][3]);
 			}
+			*/
 		}
 		else {
 			flux[mflag][0] = 0.0;
 			flux[mflag][1] = 0.0;
 			flux[mflag][2] = 0.0;
 			flux[mflag][3] = 0.0;
-
-			if (k == 947) {
+			/*
+			if (k == 2837) {
 				printf("Q : %lf, %lf, %lf, %lf\n", Q[it + II_STEP * JJ_STEP * 0], Q[it + II_STEP * JJ_STEP * 1], Q[it + II_STEP * JJ_STEP * 2], Q[it + II_STEP * JJ_STEP * 3]);
 				printf("dQ : %lf, %lf, %lf, %lf\n", dQ[it + II_STEP * JJ_STEP * 0], dQ[it + II_STEP * JJ_STEP * 1], dQ[it + II_STEP * JJ_STEP * 2], dQ[it + II_STEP * JJ_STEP * 3]);
 				printf("delta flux %d : %lf, %lf, %lf, %lf\n", mflag, flux[mflag][0], flux[mflag][1], flux[mflag][2], flux[mflag][3]);
 			}
+			*/
 		}
 	}
 
@@ -301,7 +314,7 @@ void calcLX(int k, double(*spe)) {
 		pre = (e[k] - 0.5 * rho[k] * (ux[k] * ux[k] + vy[k] * vy[k])) * (GAMMA - 1);
 		c = sqrt(GAMMA * pre / rho[k]);
 		tmp = pre / rho[k] / RAIR;
-		Mu = MU_0 * (pow((tmp) / (273.15 + 20.0), 1.5) * (273.15 + 20.0 + C) / (tmp + C));
+		Mu = MU_0 * pow((tmp / T_0), 1.5) * (T_0 + C) / (tmp + C);
 		spe[mflag] = alpha * (fabs(ZZ) + c * Sk) + 2.0 * (Mu) * Sk * Sk / rho[k];
 	}
 
