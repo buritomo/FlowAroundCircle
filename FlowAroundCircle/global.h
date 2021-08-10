@@ -26,7 +26,7 @@
 /*	Cellのうち両側2点は仮想格子							*/
 /*	計算点はゆえにSTEP個(II_STEP-5)						*/
 //#define DELTA_T 1e-8	//Runge-Kutta
-#define DELTA_T 1e-6	//LU-SGS
+#define DELTA_T 2.5e-7	//LU-SGS
 #define STEP 100
 #define II_STEP (STEP + 5)
 #define JJ_STEP (STEP + 5)
@@ -49,7 +49,7 @@
 #define J_OUTLET_MIN 77
 #define J_OUTLET_END 101
 
-#define T_NUM 1
+#define T_NUM 4
 #define LAM 1.0
 
 #define PARA
