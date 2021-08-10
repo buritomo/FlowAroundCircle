@@ -6,6 +6,7 @@
 #include "fds.h"
 #include "boundary.h"
 #include "viscose.h"
+#include "output.h"
 
 void GaussSeidel(void) {
 	int itr;
@@ -21,24 +22,29 @@ void GaussSeidel(void) {
 		viscose(II_DIR);
 		viscose(JJ_DIR);
 
+		int ki, kj;
+
 #ifdef PARA
 #pragma omp parallel for private(ki, kj)
 #endif
-
-		for (int ki = 2; ki < II_STEP - 3; ki++) {
-			for (int kj = 2; kj < JJ_STEP - 3; kj++) {
+		for (ki = 2; ki < II_STEP - 3; ki++) {
+			for (kj = 2; kj < JJ_STEP - 3; kj++) {
 				double RHS[4];
 				double rhs[4];
 				double deltaFlux[2][4];
 				double spe_r0[2];
 				double LDinv;
 				int k = ki + kj * II_STEP;
-
+				/*
 				for (int m = 0; m < 4; m++) {
-					RHS[m] = -DELTA_T * (Ehalf[k + II_STEP * JJ_STEP * m] - Ehalf[k + II_STEP * JJ_STEP * m - 1]);
+					RHS[m] =  -DELTA_T * (Ehalf[k + II_STEP * JJ_STEP * m] - Ehalf[k + II_STEP * JJ_STEP * m - 1]);
 					RHS[m] -= -DELTA_T * (Ev[k + II_STEP * JJ_STEP * m] - Ev[k + II_STEP * JJ_STEP * m - 1]);
-					RHS[m] -= DELTA_T * (Fhalf[k + II_STEP * JJ_STEP * m] - Fhalf[k + II_STEP * JJ_STEP * m - II_STEP]);
+					RHS[m] -=  DELTA_T * (Fhalf[k + II_STEP * JJ_STEP * m] - Fhalf[k + II_STEP * JJ_STEP * m - II_STEP]);
 					RHS[m] -= -DELTA_T * (Fv[k + II_STEP * JJ_STEP * m] - Fv[k + II_STEP * JJ_STEP * m - II_STEP]);
+				}
+				*/
+				for (int m = 0; m < 4; m++) {
+					RHS[m] = -DELTA_T * ((Ehalf[k + II_STEP * JJ_STEP * m] - Ehalf[k + II_STEP * JJ_STEP * m - 1]) - (Ev[k + II_STEP * JJ_STEP * m] - Ev[k + II_STEP * JJ_STEP * m - 1]) + (Fhalf[k + II_STEP * JJ_STEP * m] - Fhalf[k + II_STEP * JJ_STEP * m - II_STEP]) - (Fv[k + II_STEP * JJ_STEP * m] - Fv[k + II_STEP * JJ_STEP * m - II_STEP]));
 				}
 
 				if (itr == 0) {
@@ -77,8 +83,8 @@ void GaussSeidel(void) {
 #ifdef PARA
 #pragma omp parallel for private(ki, kj)
 #endif
-		for (int ki = 2; ki < II_STEP - 3; ki++) { 
-			for (int kj = 2; kj < JJ_STEP - 3; kj++) {
+		for (ki = 2; ki < II_STEP - 3; ki++) { 
+			for (kj = 2; kj < JJ_STEP - 3; kj++) {
 				int k = ki + kj * II_STEP;
 				double deltaFlux[2][4];
 				double rhs[4];
@@ -114,8 +120,8 @@ void GaussSeidel(void) {
 #ifdef PARA
 #pragma omp parallel for private(ki, kj)
 #endif
-		for (int ki = 2; ki < II_STEP - 3; ki++) {
-			for (int kj = 2; kj < JJ_STEP - 3; kj++) {
+		for (ki = 2; ki < II_STEP - 3; ki++) {
+			for (kj = 2; kj < JJ_STEP - 3; kj++) {
 				int k = ki + kj * II_STEP;
 				double invQ, Jaco;
 				double error4;
@@ -172,8 +178,8 @@ void GaussSeidel(void) {
 		}
 	}
 
-	printf("Time: %.8f\, error_max %lf\n", time, error_max);
-
+	printf("Time: %.8f\, error_max %e\n", time, error_max);
+	ExportErrorMax(error_max);
 
 	return;
 }

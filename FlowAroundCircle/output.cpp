@@ -133,3 +133,25 @@ void exportBoundary(void) {
     fclose(fp);
 
 }
+
+void makeErrorFile(void) {
+    FILE* fp;
+
+    fp = fopen(FNAME, "w");
+    //fprintf(fp, "time, error_max, n, i, j, itr\n");
+    fprintf(fp, "time, error_max\n");
+    fclose(fp);
+
+    return;
+}
+
+void ExportErrorMax(double errorMax) {
+    FILE* fp;
+
+    fp = fopen(FNAME, "a");
+    //fprintf(fp, "%e, %e, %d, %d, %d, %d\n", time, errorMax, n, ii, jj, itr);
+    fprintf(fp, "%e, %e\n", time, errorMax);
+    fclose(fp);
+
+    return;
+}

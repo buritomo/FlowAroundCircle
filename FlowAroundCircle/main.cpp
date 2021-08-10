@@ -25,6 +25,7 @@ int main(void) {
 	boundaryValue();
 	calcInternalValues();
 	exportf();
+	makeErrorFile();
 	//setExportBoundary();
 	system("pause");
 	//setAssumedPotential();
