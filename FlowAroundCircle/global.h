@@ -26,12 +26,12 @@
 /*	Cellのうち両側2点は仮想格子							*/
 /*	計算点はゆえにSTEP個(II_STEP-5)						*/
 //#define DELTA_T 1e-8	//Runge-Kutta
-#define DELTA_T 2.5e-7	//LU-SGS
+#define DELTA_T 2.0e-7	//LU-SGS
 #define STEP 100
 #define II_STEP (STEP + 5)
 #define JJ_STEP (STEP + 5)
 #define DELTA_S 2e-5
-#define TIME_MAX 1.00
+#define TIME_MAX 10.00
 
 //ステップ境界定義
 /*入口境界条件*/
