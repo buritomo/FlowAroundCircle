@@ -12,6 +12,9 @@ void memorySet(void) {
 	p = (double* )malloc(sizeof(double) * II_STEP * JJ_STEP);
 	H = (double* )malloc(sizeof(double) * II_STEP * JJ_STEP);
 	c = (double* )malloc(sizeof(double) * II_STEP * JJ_STEP);
+	tke = (double*)malloc(sizeof(double) * II_STEP * JJ_STEP);
+	omega = (double*)malloc(sizeof(double) * II_STEP * JJ_STEP);
+	Mut = (double*)malloc(sizeof(double) * II_STEP * JJ_STEP);
 
 	Q = (double* )malloc(sizeof(double) * II_STEP * JJ_STEP * 4);
 	E = (double* )malloc(sizeof(double) * II_STEP * JJ_STEP * 4);
@@ -21,6 +24,11 @@ void memorySet(void) {
 
 	Ev = (double*)malloc(sizeof(double) * II_STEP * JJ_STEP * 4);
 	Fv = (double*)malloc(sizeof(double) * II_STEP * JJ_STEP * 4);
+
+	TurbE = (double*)malloc(sizeof(double) * II_STEP * JJ_STEP * 2);
+	TurbF = (double*)malloc(sizeof(double) * II_STEP * JJ_STEP * 2);
+	TurbEv = (double*)malloc(sizeof(double) * II_STEP * JJ_STEP * 2);
+	TurbFv = (double*)malloc(sizeof(double) * II_STEP * JJ_STEP * 2);
 
 	x = (double* )malloc(sizeof(double) * II_STEP * JJ_STEP);
 	y = (double* )malloc(sizeof(double) * II_STEP * JJ_STEP);

@@ -65,6 +65,9 @@ double* e;
 double* p;
 double* H;
 double* c;
+double* tke;
+double* omega;
+double* Mut;
 volatile double time;
 volatile double time_flag;
 volatile int error_flag;
@@ -74,9 +77,13 @@ double* E;
 double* F;
 double* Ehalf;
 double* Fhalf;
+double* TurbE;
+double* TurbF;
 //”S«€
 double* Ev;
 double* Fv;
+double* TurbEv;
+double* TurbFv;
 //À•W
 double* x;
 double* y;
@@ -105,6 +112,9 @@ extern double* e;
 extern double* p;
 extern double* H;
 extern double* c;
+extern double* tke;
+extern double* omega;
+extern double* Mut;
 extern volatile double time;
 extern volatile double time_flag;
 extern volatile int error_flag;
@@ -114,9 +124,13 @@ extern double* E;
 extern double* F;
 extern double* Ehalf;
 extern double* Fhalf;
+extern double* TurbE;
+extern double* TurbF;
 //”S«€
 extern double* Ev;
 extern double* Fv;
+extern double* TurbEv;
+extern double* TurbFv;
 //À•W
 extern double* x;
 extern double* y;

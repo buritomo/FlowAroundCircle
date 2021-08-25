@@ -32,10 +32,10 @@ int main(void) {
 
 	while (time <= TIME_MAX) {
 		makePotential();
-		fds(II_DIR);
-		fds(JJ_DIR);
-		viscose(II_DIR);
-		viscose(JJ_DIR);
+		//fds(II_DIR);
+		//fds(JJ_DIR);
+		//viscose(II_DIR);
+		//viscose(JJ_DIR);
 		//rungekutta();
 		//inversePotentialToParams();
 		//boundaryValue();
