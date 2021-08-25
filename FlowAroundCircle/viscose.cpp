@@ -174,9 +174,12 @@ void calcCoef(int k, int dir) {
 
 double calcTemp(int k){
 //void calcTemp(int k, int dir) {
+    /*
     double cp = GAMMA * RAIR / (GAMMA - 1);
 
     return H[k] / cp;
+    */
+    return p[k] / (rho[k] * RAIR);
     /*
     if (dir == II_DIR) {
         T_a = H[k] / cp;
